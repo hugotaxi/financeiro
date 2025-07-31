@@ -224,40 +224,6 @@ function calculos() {
 }
 
 // Descreva esta função...
-function salvacorrida() {
-  if (!document.getElementById('txtvalor').value.length) {
-    Swal.fire('Preencha tudo');
-  } else {
-    function insertRow() {
-    let jsonData = {};
-    let colunas = ['cliente', 'informacao', 'valor', 'hora'];
-    let valores = [usuarionome, [document.getElementById('txtcorrida').value,' ',new Date().toLocaleDateString()].join(''), document.getElementById('txtvalor').value, new Date().toLocaleTimeString()];
-    for (let i = 0; i < colunas.length; i++) {
-      jsonData[colunas[i]] = valores[i];
-    }
-      fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidcorridas+"/?user_field_names=true", {
-      method: "POST",
-      headers: {
-      "Authorization": "Token " + bb_baserow_token,
-      "Content-Type": "application/json"
-      },
-      body: JSON.stringify(jsonData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        resposta_inserir_linha = data;
-          salvasaldo();
-
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-    }
-    insertRow();
-  }
-}
-
-// Descreva esta função...
 function calldivisa(xretorno) {
   contclick = contclick + 1;
   idapagar = ((resultado_pesquisa[(xretorno - 1)])['id']);
@@ -298,33 +264,37 @@ function chamarlista() {
 }
 
 // Descreva esta função...
-function salvasaldo() {
-  function insertRow() {
-  let jsonData = {};
-  let colunas = ['local', 'valor', 'data', 'hora'];
-  let valores = [[usuarionome,' ',document.getElementById('txtcorrida').value].join(''), document.getElementById('txtvalor').value, new Date().toLocaleDateString(), new Date().toLocaleTimeString()];
-  for (let i = 0; i < colunas.length; i++) {
-    jsonData[colunas[i]] = valores[i];
+function salvacorrida() {
+  if (!document.getElementById('txtvalor').value.length) {
+    Swal.fire('Preencha tudo');
+  } else {
+    function insertRow() {
+    let jsonData = {};
+    let colunas = ['cliente', 'informacao', 'valor', 'hora'];
+    let valores = [usuarionome, [document.getElementById('txtcorrida').value,' ',new Date().toLocaleDateString()].join(''), document.getElementById('txtvalor').value, new Date().toLocaleTimeString()];
+    for (let i = 0; i < colunas.length; i++) {
+      jsonData[colunas[i]] = valores[i];
+    }
+      fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidcorridas+"/?user_field_names=true", {
+      method: "POST",
+      headers: {
+      "Authorization": "Token " + bb_baserow_token,
+      "Content-Type": "application/json"
+      },
+      body: JSON.stringify(jsonData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        resposta_inserir_linha = data;
+          salvasaldo();
+
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    }
+    insertRow();
   }
-    fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidsaldo+"/?user_field_names=true", {
-    method: "POST",
-    headers: {
-    "Authorization": "Token " + bb_baserow_token,
-    "Content-Type": "application/json"
-    },
-    body: JSON.stringify(jsonData)
-    })
-    .then(response => response.json())
-    .then(data => {
-      resposta_inserir_linha = data;
-        Swal.fire('Salvo');
-    window.location.href = "clientes.html";
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-  }
-  insertRow();
 }
 
 // Descreva esta função...
@@ -354,6 +324,36 @@ function pagina1() {
     somadesaldo = (txt_to_number(somadesaldo)) + (txt_to_number(Item));
   }
   calculos();
+}
+
+// Descreva esta função...
+function salvasaldo() {
+  function insertRow() {
+  let jsonData = {};
+  let colunas = ['local', 'valor', 'data', 'hora', 'codigo'];
+  let valores = [[usuarionome,' ',document.getElementById('txtcorrida').value].join(''), document.getElementById('txtvalor').value, new Date().toLocaleDateString(), new Date().toLocaleTimeString(), localStorage.getItem('codigo') || '0'];
+  for (let i = 0; i < colunas.length; i++) {
+    jsonData[colunas[i]] = valores[i];
+  }
+    fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidsaldo+"/?user_field_names=true", {
+    method: "POST",
+    headers: {
+    "Authorization": "Token " + bb_baserow_token,
+    "Content-Type": "application/json"
+    },
+    body: JSON.stringify(jsonData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      resposta_inserir_linha = data;
+        Swal.fire('Salvo');
+    window.location.href = "clientes.html";
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+  }
+  insertRow();
 }
 
 // Descreva esta função...

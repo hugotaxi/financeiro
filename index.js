@@ -1,4 +1,30 @@
-var valorextra, tabelaidlogin, resultadodiaria, idquantcorrida, resultado_linhas, resultadogastos, resugastodia, resultado_pesquisa, areceberhoje, Item, abrirtela, tabelaidloginnome, tabelaidsaldo, tabelaidsaldodata, somagastodia, tabelaidgasto, tabelaidgastodata, idd, tabelaidcorridas, resposta_inserir_linha, tabelaidgastoinformacao, localdacorrida, tabelaidcorridainformacao, valorss, idnsaldo, id, opcaoselect, idngastodia, abastecimento, idquantdecorridahj, somadesaldo, tabelaidcorridacliente, todosgastodia, idss, todosareceber, quantabastecimento, todosareceberhoje, valorareceberhoje, tabelaidcorridavalor, todasdiarias, somadiarias, idareceber, locaiss, todosgastos, idngasto, todosvalores, vlabastecimento, somagastos, somaareceber, datass, tabelaidmensal, tabelaidmensalmes, todossaldos, contclick;
+var valorextra, tabelaidlogin, resultado_pesquisa, resultadodiaria, idquantcorrida, resultado_linhas, resultadogastos, resugastodia, areceberhoje, Item, abrirtela, tabelaidloginnome, tabelaidgasto, tabelaidsaldo, tabelaidsaldodata, criarcodigo, resposta_inserir_linha, somagastodia, tabelaidgastodata, idd, tabelaidcorridas, tabelaidgastoinformacao, localdacorrida, tabelaidcorridainformacao, valorss, idnsaldo, id, opcaoselect, ultimocodigo, idngastodia, abastecimento, idquantdecorridahj, somadesaldo, tabelaidcorridacliente, todosgastodia, idss, todosareceber, quantabastecimento, todosareceberhoje, valorareceberhoje, tabelaidcorridavalor, todasdiarias, somadiarias, idareceber, locaiss, todosgastos, idngasto, todosvalores, vlabastecimento, somagastos, somaareceber, datass, tabelaidmensal, tabelaidmensalmes, todossaldos, contclick;
+
+// Descreva esta função...
+function codigoabastecimento() {
+  function getRowsSearch() {
+    fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidgasto+"/?user_field_names=true&filter__field_"+'1188504'+"__"+"equal"+"="+'Abastecimento'+ "&order_by="+"+"+'informacao'+"&page="+'0', {
+    method: "GET",
+    headers: {
+    "Authorization": "Token " + bb_baserow_token
+    }
+    })
+    .then(response => response.json())
+    .then(data => {
+      resultado_pesquisa = data.results;
+        for (var Item_index2 in resultado_pesquisa) {
+      Item = resultado_pesquisa[Item_index2];
+      ultimocodigo = (Item['codigo']);
+      localStorage.setItem('codigo',ultimocodigo);
+    }
+
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+  }
+  getRowsSearch();
+}
 
 // Descreva esta função...
 function inicio() {
@@ -13,17 +39,18 @@ function inicio() {
     .then(data => {
       resultadodiaria = data.results;
         $("#l2").html('lkkk');
-    for (var Item_index2 in resultadodiaria) {
-      Item = resultadodiaria[Item_index2];
+    for (var Item_index3 in resultadodiaria) {
+      Item = resultadodiaria[Item_index3];
       idquantcorrida = idquantcorrida + 1;
       todasdiarias.push((Item['valor']));
     }
-    for (var Item_index3 in todasdiarias) {
-      Item = todasdiarias[Item_index3];
+    for (var Item_index4 in todasdiarias) {
+      Item = todasdiarias[Item_index4];
       somadiarias = (txt_to_number(somadiarias)) + (txt_to_number(Item));
     }
     $("#l1").html('<span style="font-size:13px; color:#000000; font-weight:bold; font-style:normal;">'+(['Diaria: ',format_decimal_number(somadiarias, 2, false),' N° ',idquantcorrida].join(''))+' </span>');
     $("#l2").html('<span style="font-size:13px; color:#000000; font-weight:bold; font-style:normal;">'+('Media por corrida: ' + String(format_decimal_number((somadiarias / idquantcorrida), 2, false)))+' </span>');
+    codigoabastecimento();
 
     })
     .catch((error) => {
@@ -31,6 +58,77 @@ function inicio() {
     });
   }
   getRowsSearch();
+}
+
+function mathRandomInt(a, b) {
+  if (a > b) {
+    // Swap a and b to ensure a is smaller.
+    var c = a;
+    a = b;
+    b = c;
+  }
+  return Math.floor(Math.random() * (b - a + 1) + a);
+}
+
+// Descreva esta função...
+function svgasto() {
+  if (!document.getElementById('txtvalor').value.length) {
+    window.location.href = "manutencao.html";} else if (document.getElementById('txtcorrida').value == 'Abastecimento ') {
+    criarcodigo = mathRandomInt(100, 999);
+    function insertRow() {
+    let jsonData = {};
+    let colunas = ['informacao', 'valor', 'data', 'codigo', 'km'];
+    let valores = [document.getElementById('txtcorrida').value, document.getElementById('txtvalor').value, new Date().toLocaleDateString(), criarcodigo, document.getElementById('txtkm').value];
+    for (let i = 0; i < colunas.length; i++) {
+      jsonData[colunas[i]] = valores[i];
+    }
+      fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidgasto+"/?user_field_names=true", {
+      method: "POST",
+      headers: {
+      "Authorization": "Token " + bb_baserow_token,
+      "Content-Type": "application/json"
+      },
+      body: JSON.stringify(jsonData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        resposta_inserir_linha = data;
+          Swal.fire('Salvo');
+      window.location.href = "reset.html";
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    }
+    insertRow();
+  } else {
+    function insertRow() {
+    let jsonData = {};
+    let colunas = ['informacao', 'valor', 'data'];
+    let valores = [document.getElementById('txtcorrida').value, document.getElementById('txtvalor').value, new Date().toLocaleDateString()];
+    for (let i = 0; i < colunas.length; i++) {
+      jsonData[colunas[i]] = valores[i];
+    }
+      fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidgasto+"/?user_field_names=true", {
+      method: "POST",
+      headers: {
+      "Authorization": "Token " + bb_baserow_token,
+      "Content-Type": "application/json"
+      },
+      body: JSON.stringify(jsonData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        resposta_inserir_linha = data;
+          Swal.fire('Salvo');
+      window.location.href = "reset.html";
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    }
+    insertRow();
+  }
 }
 
 // Descreva esta função...
@@ -45,8 +143,8 @@ function todosossaldos() {
     .then(response => response.json())
     .then(data => {
       resultado_linhas = data.results;
-        for (var Item_index4 in resultado_linhas) {
-      Item = resultado_linhas[Item_index4];
+        for (var Item_index5 in resultado_linhas) {
+      Item = resultado_linhas[Item_index5];
       idss.push((Item['id']));
       locaiss.push((Item['local']));
       valorss.push((Item['valor']));
@@ -62,8 +160,8 @@ function todosossaldos() {
       .then(response => response.json())
       .then(data => {
         resultado_linhas = data.results;
-          for (var Item_index5 in resultado_linhas) {
-        Item = resultado_linhas[Item_index5];
+          for (var Item_index6 in resultado_linhas) {
+        Item = resultado_linhas[Item_index6];
         idss.push((Item['id']));
         locaiss.push((Item['local']));
         valorss.push((Item['valor']));
@@ -79,8 +177,8 @@ function todosossaldos() {
         .then(response => response.json())
         .then(data => {
           resultado_linhas = data.results;
-            for (var Item_index6 in resultado_linhas) {
-          Item = resultado_linhas[Item_index6];
+            for (var Item_index7 in resultado_linhas) {
+          Item = resultado_linhas[Item_index7];
           idss.push((Item['id']));
           locaiss.push((Item['local']));
           valorss.push((Item['valor']));
@@ -124,13 +222,13 @@ function callgastos() {
       resultadogastos = data.results;
         idd = 0;
     var Item_list = (resultadogastos.reverse());
-    for (var Item_index7 in Item_list) {
-      Item = Item_list[Item_index7];
+    for (var Item_index8 in Item_list) {
+      Item = Item_list[Item_index8];
       idd = idd + 1;
       todosgastos.push((Item['valor']));
     }
-    for (var Item_index8 in todosgastos) {
-      Item = todosgastos[Item_index8];
+    for (var Item_index9 in todosgastos) {
+      Item = todosgastos[Item_index9];
       idngasto = idngasto + 1;
       somagastos = (txt_to_number(somagastos)) + (txt_to_number(Item));
     }
@@ -156,8 +254,8 @@ function callreceber() {
     .then(response => response.json())
     .then(data => {
       resultado_linhas = data.results;
-        for (var Item_index9 in resultado_linhas) {
-      Item = resultado_linhas[Item_index9];
+        for (var Item_index10 in resultado_linhas) {
+      Item = resultado_linhas[Item_index10];
       todosareceber.push((Item['valor']));
     }
     function getRows() {
@@ -170,12 +268,12 @@ function callreceber() {
       .then(response => response.json())
       .then(data => {
         resultado_linhas = data.results;
-          for (var Item_index10 in resultado_linhas) {
-        Item = resultado_linhas[Item_index10];
+          for (var Item_index11 in resultado_linhas) {
+        Item = resultado_linhas[Item_index11];
         todosareceber.push((Item['valor']));
       }
-      for (var Item_index11 in todosareceber) {
-        Item = todosareceber[Item_index11];
+      for (var Item_index12 in todosareceber) {
+        Item = todosareceber[Item_index12];
         idareceber = idareceber + 1;
         somaareceber = (txt_to_number(somaareceber)) + (txt_to_number(Item));
       }
@@ -197,39 +295,6 @@ function callreceber() {
 }
 
 // Descreva esta função...
-function svgasto() {
-  if (!document.getElementById('txtvalor').value.length) {
-    window.location.href = "manutencao.html";} else {
-    function insertRow() {
-    let jsonData = {};
-    let colunas = ['informacao', 'valor', 'data'];
-    let valores = [document.getElementById('txtcorrida').value, document.getElementById('txtvalor').value, new Date().toLocaleDateString()];
-    for (let i = 0; i < colunas.length; i++) {
-      jsonData[colunas[i]] = valores[i];
-    }
-      fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidgasto+"/?user_field_names=true", {
-      method: "POST",
-      headers: {
-      "Authorization": "Token " + bb_baserow_token,
-      "Content-Type": "application/json"
-      },
-      body: JSON.stringify(jsonData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        resposta_inserir_linha = data;
-          Swal.fire('Salvo');
-      window.location.href = "reset.html";
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-    }
-    insertRow();
-  }
-}
-
-// Descreva esta função...
 function callgastodia() {
   function getRowsSearch() {
     fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidgasto+"/?user_field_names=true&filter__field_"+tabelaidgastodata+"__"+"equal"+"="+(new Date().toLocaleDateString())+ "&order_by="+"+"+'data', {
@@ -241,12 +306,12 @@ function callgastodia() {
     .then(response => response.json())
     .then(data => {
       resugastodia = data.results;
-        for (var Item_index12 in resugastodia) {
-      Item = resugastodia[Item_index12];
+        for (var Item_index13 in resugastodia) {
+      Item = resugastodia[Item_index13];
       todosgastodia.push((Item['valor']));
     }
-    for (var Item_index13 in todosgastodia) {
-      Item = todosgastodia[Item_index13];
+    for (var Item_index14 in todosgastodia) {
+      Item = todosgastodia[Item_index14];
       idngastodia = idngastodia + 1;
       somagastodia = (txt_to_number(somagastodia)) + (txt_to_number(Item));
     }
@@ -275,13 +340,13 @@ function abastecimentos() {
         if (!resultado_pesquisa.length) {
       abastecimento = 0;
     } else {
-      for (var Item_index14 in resultado_pesquisa) {
-        Item = resultado_pesquisa[Item_index14];
+      for (var Item_index15 in resultado_pesquisa) {
+        Item = resultado_pesquisa[Item_index15];
         quantabastecimento = quantabastecimento + 1;
         todosvalores.push((Item['valor']));
       }
-      for (var Item_index15 in todosvalores) {
-        Item = todosvalores[Item_index15];
+      for (var Item_index16 in todosvalores) {
+        Item = todosvalores[Item_index16];
         vlabastecimento = (txt_to_number(vlabastecimento)) + (txt_to_number(Item));
       }
     }
@@ -305,8 +370,8 @@ function svsaldo() {
   if (!document.getElementById('txtvalor').value.length) {
     function insertRow() {
     let jsonData = {};
-    let colunas = ['local', 'valor', 'data', 'hora'];
-    let valores = [localdacorrida, valorextra, new Date().toLocaleDateString(), new Date().toLocaleTimeString()];
+    let colunas = ['local', 'valor', 'data', 'hora', 'codigo'];
+    let valores = [localdacorrida, valorextra, new Date().toLocaleDateString(), new Date().toLocaleTimeString(), ultimocodigo];
     for (let i = 0; i < colunas.length; i++) {
       jsonData[colunas[i]] = valores[i];
     }
@@ -332,8 +397,8 @@ function svsaldo() {
   } else {
     function insertRow() {
     let jsonData = {};
-    let colunas = ['local', 'valor', 'data', 'hora'];
-    let valores = [localdacorrida, document.getElementById('txtvalor').value, new Date().toLocaleDateString(), new Date().toLocaleTimeString()];
+    let colunas = ['local', 'valor', 'data', 'hora', 'codigo'];
+    let valores = [localdacorrida, document.getElementById('txtvalor').value, new Date().toLocaleDateString(), new Date().toLocaleTimeString(), ultimocodigo];
     for (let i = 0; i < colunas.length; i++) {
       jsonData[colunas[i]] = valores[i];
     }
@@ -372,13 +437,13 @@ function calldiariaareceberdepois() {
     .then(data => {
       areceberhoje = data.results;
         var Item_list2 = (areceberhoje.reverse());
-    for (var Item_index16 in Item_list2) {
-      Item = Item_list2[Item_index16];
+    for (var Item_index17 in Item_list2) {
+      Item = Item_list2[Item_index17];
       idquantdecorridahj = idquantdecorridahj + 1;
       todosareceberhoje.push((Item['valor']));
     }
-    for (var Item_index17 in todosareceberhoje) {
-      Item = todosareceberhoje[Item_index17];
+    for (var Item_index18 in todosareceberhoje) {
+      Item = todosareceberhoje[Item_index18];
       valorareceberhoje = (txt_to_number(valorareceberhoje)) + (txt_to_number(Item));
     }
     setlistsomasaldo();
@@ -393,15 +458,15 @@ function calldiariaareceberdepois() {
 
 // Descreva esta função...
 function setlistsomasaldo() {
-  for (var Item_index18 in valorss) {
-    Item = valorss[Item_index18];
+  for (var Item_index19 in valorss) {
+    Item = valorss[Item_index19];
     idnsaldo = idnsaldo + 1;
     somadesaldo = (txt_to_number(somadesaldo)) + (txt_to_number(Item));
   }
   id = 0;
   var Item_list3 = (locaiss.reverse());
-  for (var Item_index19 in Item_list3) {
-    Item = Item_list3[Item_index19];
+  for (var Item_index20 in Item_list3) {
+    Item = Item_list3[Item_index20];
     id = id + 1;
   }
   mostrar();
@@ -417,7 +482,7 @@ function mostrar() {
 //feito com bootblocks.com.br
   valorextra = 0;
   abrirtela = [];
-  opcaoselect = ['Hugo Táxi', 'clientes', 'saldos/gastos', 'orcamento', 'manutencao'];
+  opcaoselect = ['Hugo Táxi', 'clientes', 'saldos/gastos', 'orcamento', 'manutencao', 'abastecimento'];
   for (var Item_index in opcaoselect) {
     Item = opcaoselect[Item_index];
     $("#select_1").append("<option value="+Item+">"+Item+"</option>");
@@ -428,7 +493,8 @@ $("#select_1").change(function(){
     window.location.href = "clientes.html";} else if ($(this).val() == 'saldos/gastos') {
     window.location.href = "saldoegasto.html";} else if ($(this).val() == 'orcamento') {
     window.location.href = "orcamento.html";} else if ($(this).val() == 'manutencao') {
-    window.location.href = "manutencao.html";}
+    window.location.href = "manutencao.html";} else if ($(this).val() == 'abastecimento') {
+    window.location.href = "abastecimento.html";}
 });
 
 var bb_baserow_token = 'IKrER8jZ6NQENRIxVlNeF65L5J3ss1LH';
@@ -478,6 +544,7 @@ var bb_baserow_url = 'https://api.baserow.io/';
   somaareceber = 0;
   contclick = 0;
   localdacorrida = [];
+  ultimocodigo = 0;
 
 //feito com bootblocks.com.br
   document.getElementById('div_1').style['background-image'] = 'url("assets/victorcima1.jpg")';
@@ -486,13 +553,10 @@ var bb_baserow_url = 'https://api.baserow.io/';
 
 
         function qclick() {
-            let elementoClick = document.getElementById('l2');
+            let elementoClick = document.getElementById('button_2');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
-                      todosossaldos();
-  $("#"+'telarestante').hide();
-  $("#"+'telab1').hide();
-  $("#"+'telab2').hide();
+                      svgasto();
 
                 });
             }
@@ -528,10 +592,13 @@ var bb_baserow_url = 'https://api.baserow.io/';
 
 
         function qclick4() {
-            let elementoClick = document.getElementById('button_2');
+            let elementoClick = document.getElementById('l2');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
-                      svgasto();
+                      todosossaldos();
+  $("#"+'telarestante').hide();
+  $("#"+'telab1').hide();
+  $("#"+'telab2').hide();
 
                 });
             }
@@ -543,7 +610,8 @@ var bb_baserow_url = 'https://api.baserow.io/';
             let elementoClick = document.getElementById('txtvalor');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
-                      $("#"+'telab1').hide();
+                      $("#"+'txtkm').show();
+  $("#"+'telab1').hide();
   $("#"+'telab2').hide();
   document.getElementById('space_mexer').style.height = '5' + "%";
   document.getElementById('space_mexer').style.width = '10' + "%";
