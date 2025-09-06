@@ -1,4 +1,4 @@
-var tabelaidlogin, resultado_linhas, resposta_inserir_linha, todosareceber, tabelaidloginnome, tabelaidmanutencao, id, tabelaidgasto, somaareceber, tabelaidcorridas, Item, todossaldos, tabelaidcorridacliente, somadesaldo, tabelaidcorridavalor, tabelaidcorridainformacao, tabelaidsaldo, tabelaidsaldodata, tabelaidgastoinformacao, tabelaidgastodata, tabelaidmensal, tabelaidmensalmes, tabelaidmanutecaodata;
+var tabelaidlogin, resposta_inserir_linha, resultado_linhas, todosareceber, tabelaidloginnome, tabelaidgasto, tabelaidmanutencao, id, somaareceber, tabelaidcorridas, Item, todossaldos, tabelaidcorridacliente, somadesaldo, tabelaidcorridavalor, tabelaidcorridainformacao, tabelaidsaldo, tabelaidsaldodata, tabelaidgastoinformacao, tabelaidgastodata, tabelaidmensal, tabelaidmensalmes, tabelaidmanutecaodata;
 
 // Descreva esta função...
 function salvarmanutencao() {

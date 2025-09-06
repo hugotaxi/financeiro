@@ -43,6 +43,7 @@ function inicio() {
       Item = resultadodiaria[Item_index3];
       idquantcorrida = idquantcorrida + 1;
       todasdiarias.push((Item['valor']));
+      $("#lbultima").html('<span style="font-size:10px; color:#000000; font-weight:normal; font-style:normal;">'+([Item['local'],' / ',Item['valor'],' / ',Item['hora']].join(''))+' </span>');
     }
     for (var Item_index4 in todasdiarias) {
       Item = todasdiarias[Item_index4];
@@ -132,83 +133,6 @@ function svgasto() {
 }
 
 // Descreva esta função...
-function todosossaldos() {
-  function getRows() {
-    fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidsaldo+"/?user_field_names=true&page="+'1', {
-    method: "GET",
-    headers: {
-    "Authorization": "Token " + bb_baserow_token
-    }
-    })
-    .then(response => response.json())
-    .then(data => {
-      resultado_linhas = data.results;
-        for (var Item_index5 in resultado_linhas) {
-      Item = resultado_linhas[Item_index5];
-      idss.push((Item['id']));
-      locaiss.push((Item['local']));
-      valorss.push((Item['valor']));
-      datass.push((Item['data']));
-    }
-    function getRows() {
-      fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidsaldo+"/?user_field_names=true&page="+'2', {
-      method: "GET",
-      headers: {
-      "Authorization": "Token " + bb_baserow_token
-      }
-      })
-      .then(response => response.json())
-      .then(data => {
-        resultado_linhas = data.results;
-          for (var Item_index6 in resultado_linhas) {
-        Item = resultado_linhas[Item_index6];
-        idss.push((Item['id']));
-        locaiss.push((Item['local']));
-        valorss.push((Item['valor']));
-        datass.push((Item['data']));
-      }
-      function getRows() {
-        fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidsaldo+"/?user_field_names=true&page="+'3', {
-        method: "GET",
-        headers: {
-        "Authorization": "Token " + bb_baserow_token
-        }
-        })
-        .then(response => response.json())
-        .then(data => {
-          resultado_linhas = data.results;
-            for (var Item_index7 in resultado_linhas) {
-          Item = resultado_linhas[Item_index7];
-          idss.push((Item['id']));
-          locaiss.push((Item['local']));
-          valorss.push((Item['valor']));
-          datass.push((Item['data']));
-        }
-        callgastos();
-
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-      }
-      getRows();
-
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-    }
-    getRows();
-
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-  }
-  getRows();
-}
-
-// Descreva esta função...
 function callgastos() {
   function getRowsSearch() {
     fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidgasto+"/?user_field_names=true&filter__field_"+tabelaidgastodata+"__"+"not_equal"+"="+'**'+ "&order_by="+"+"+'data', {
@@ -222,13 +146,13 @@ function callgastos() {
       resultadogastos = data.results;
         idd = 0;
     var Item_list = (resultadogastos.reverse());
-    for (var Item_index8 in Item_list) {
-      Item = Item_list[Item_index8];
+    for (var Item_index5 in Item_list) {
+      Item = Item_list[Item_index5];
       idd = idd + 1;
       todosgastos.push((Item['valor']));
     }
-    for (var Item_index9 in todosgastos) {
-      Item = todosgastos[Item_index9];
+    for (var Item_index6 in todosgastos) {
+      Item = todosgastos[Item_index6];
       idngasto = idngasto + 1;
       somagastos = (txt_to_number(somagastos)) + (txt_to_number(Item));
     }
@@ -254,8 +178,8 @@ function callreceber() {
     .then(response => response.json())
     .then(data => {
       resultado_linhas = data.results;
-        for (var Item_index10 in resultado_linhas) {
-      Item = resultado_linhas[Item_index10];
+        for (var Item_index7 in resultado_linhas) {
+      Item = resultado_linhas[Item_index7];
       todosareceber.push((Item['valor']));
     }
     function getRows() {
@@ -268,12 +192,12 @@ function callreceber() {
       .then(response => response.json())
       .then(data => {
         resultado_linhas = data.results;
-          for (var Item_index11 in resultado_linhas) {
-        Item = resultado_linhas[Item_index11];
+          for (var Item_index8 in resultado_linhas) {
+        Item = resultado_linhas[Item_index8];
         todosareceber.push((Item['valor']));
       }
-      for (var Item_index12 in todosareceber) {
-        Item = todosareceber[Item_index12];
+      for (var Item_index9 in todosareceber) {
+        Item = todosareceber[Item_index9];
         idareceber = idareceber + 1;
         somaareceber = (txt_to_number(somaareceber)) + (txt_to_number(Item));
       }
@@ -306,12 +230,12 @@ function callgastodia() {
     .then(response => response.json())
     .then(data => {
       resugastodia = data.results;
-        for (var Item_index13 in resugastodia) {
-      Item = resugastodia[Item_index13];
+        for (var Item_index10 in resugastodia) {
+      Item = resugastodia[Item_index10];
       todosgastodia.push((Item['valor']));
     }
-    for (var Item_index14 in todosgastodia) {
-      Item = todosgastodia[Item_index14];
+    for (var Item_index11 in todosgastodia) {
+      Item = todosgastodia[Item_index11];
       idngastodia = idngastodia + 1;
       somagastodia = (txt_to_number(somagastodia)) + (txt_to_number(Item));
     }
@@ -340,13 +264,13 @@ function abastecimentos() {
         if (!resultado_pesquisa.length) {
       abastecimento = 0;
     } else {
-      for (var Item_index15 in resultado_pesquisa) {
-        Item = resultado_pesquisa[Item_index15];
+      for (var Item_index12 in resultado_pesquisa) {
+        Item = resultado_pesquisa[Item_index12];
         quantabastecimento = quantabastecimento + 1;
         todosvalores.push((Item['valor']));
       }
-      for (var Item_index16 in todosvalores) {
-        Item = todosvalores[Item_index16];
+      for (var Item_index13 in todosvalores) {
+        Item = todosvalores[Item_index13];
         vlabastecimento = (txt_to_number(vlabastecimento)) + (txt_to_number(Item));
       }
     }
@@ -437,13 +361,13 @@ function calldiariaareceberdepois() {
     .then(data => {
       areceberhoje = data.results;
         var Item_list2 = (areceberhoje.reverse());
-    for (var Item_index17 in Item_list2) {
-      Item = Item_list2[Item_index17];
+    for (var Item_index14 in Item_list2) {
+      Item = Item_list2[Item_index14];
       idquantdecorridahj = idquantdecorridahj + 1;
       todosareceberhoje.push((Item['valor']));
     }
-    for (var Item_index18 in todosareceberhoje) {
-      Item = todosareceberhoje[Item_index18];
+    for (var Item_index15 in todosareceberhoje) {
+      Item = todosareceberhoje[Item_index15];
       valorareceberhoje = (txt_to_number(valorareceberhoje)) + (txt_to_number(Item));
     }
     setlistsomasaldo();
@@ -457,16 +381,117 @@ function calldiariaareceberdepois() {
 }
 
 // Descreva esta função...
+function todosossaldos() {
+  function getRows() {
+    fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidsaldo+"/?user_field_names=true&page="+'1', {
+    method: "GET",
+    headers: {
+    "Authorization": "Token " + bb_baserow_token
+    }
+    })
+    .then(response => response.json())
+    .then(data => {
+      resultado_linhas = data.results;
+        for (var Item_index16 in resultado_linhas) {
+      Item = resultado_linhas[Item_index16];
+      idss.push((Item['id']));
+      locaiss.push((Item['local']));
+      valorss.push((Item['valor']));
+      datass.push((Item['data']));
+    }
+    function getRows() {
+      fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidsaldo+"/?user_field_names=true&page="+'2', {
+      method: "GET",
+      headers: {
+      "Authorization": "Token " + bb_baserow_token
+      }
+      })
+      .then(response => response.json())
+      .then(data => {
+        resultado_linhas = data.results;
+          for (var Item_index17 in resultado_linhas) {
+        Item = resultado_linhas[Item_index17];
+        idss.push((Item['id']));
+        locaiss.push((Item['local']));
+        valorss.push((Item['valor']));
+        datass.push((Item['data']));
+      }
+      function getRows() {
+        fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidsaldo+"/?user_field_names=true&page="+'3', {
+        method: "GET",
+        headers: {
+        "Authorization": "Token " + bb_baserow_token
+        }
+        })
+        .then(response => response.json())
+        .then(data => {
+          resultado_linhas = data.results;
+            for (var Item_index18 in resultado_linhas) {
+          Item = resultado_linhas[Item_index18];
+          idss.push((Item['id']));
+          locaiss.push((Item['local']));
+          valorss.push((Item['valor']));
+          datass.push((Item['data']));
+        }
+        function getRows() {
+          fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidsaldo+"/?user_field_names=true&page="+'4', {
+          method: "GET",
+          headers: {
+          "Authorization": "Token " + bb_baserow_token
+          }
+          })
+          .then(response => response.json())
+          .then(data => {
+            resultado_linhas = data.results;
+              for (var Item_index19 in resultado_linhas) {
+            Item = resultado_linhas[Item_index19];
+            idss.push((Item['id']));
+            locaiss.push((Item['local']));
+            valorss.push((Item['valor']));
+            datass.push((Item['data']));
+          }
+          callgastos();
+
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+        }
+        getRows();
+
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+      }
+      getRows();
+
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    }
+    getRows();
+
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+  }
+  getRows();
+}
+
+// Descreva esta função...
 function setlistsomasaldo() {
-  for (var Item_index19 in valorss) {
-    Item = valorss[Item_index19];
+  for (var Item_index20 in valorss) {
+    Item = valorss[Item_index20];
     idnsaldo = idnsaldo + 1;
     somadesaldo = (txt_to_number(somadesaldo)) + (txt_to_number(Item));
   }
   id = 0;
   var Item_list3 = (locaiss.reverse());
-  for (var Item_index20 in Item_list3) {
-    Item = Item_list3[Item_index20];
+  for (var Item_index21 in Item_list3) {
+    Item = Item_list3[Item_index21];
     id = id + 1;
   }
   mostrar();
