@@ -1,4 +1,4 @@
-var ids_card, tabelaidlogin, resultado_pesquisa, tabelaidloginnome, tabelaidcorridas, tabelaidcorridavalor, Item, id, resposta_inserir_linha, tabelaidcorridacliente, todosareceber, todossaldos, somadesaldo, somaareceber, tabelaidcorridainformacao, tabelaidsaldo, tabelaidsaldodata, tabelaidgasto, tabelaidgastoinformacao, tabelaidgastodata, tabelaidmensal, tabelaidmensalmes;
+var ids_card, tabelaidlogin, resultado_pesquisa, tabelaidloginnome, tabelaidcorridas, tabelaidcorridavalor, Item, resposta_inserir_linha, id, tabelaidcorridacliente, todosareceber, todossaldos, somadesaldo, somaareceber, tabelaidcorridainformacao, tabelaidsaldo, tabelaidsaldodata, tabelaidgasto, tabelaidgastoinformacao, tabelaidgastodata, tabelaidmensal, tabelaidmensalmes;
 
 // Descreva esta função...
 function callsaldoo(ids_card) {

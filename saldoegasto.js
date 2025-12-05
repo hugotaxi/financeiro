@@ -23,24 +23,6 @@ function calldelete() {
   window.location.href = "index.html";}
 
 // Descreva esta função...
-function callsaldoo(ids_card) {
-  contclick = contclick + 1;
-  if (contclick >= 3) {
-    Swal.fire('Deletando...');
-    function deleteRow() {
-      fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidsaldo+"/"+(idss.slice((-ids_card))[0])+"/?user_field_names=true", {
-      method: "DELETE",
-      headers: {
-      "Authorization": "Token " + bb_baserow_token
-      }
-      })
-    }
-    deleteRow();
-    var clockdelete = setInterval(calldelete, 1000);
-  }
-}
-
-// Descreva esta função...
 function callgastos() {
   function getRowsSearch() {
     fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidgasto+"/?user_field_names=true&filter__field_"+tabelaidgastodata+"__"+"not_equal"+"="+'**'+ "&order_by="+"+"+'data', {
@@ -212,6 +194,24 @@ function setlistsomasaldo() {
     document.getElementById("telasaldo").innerHTML += card;
   }
   calldesigner();
+}
+
+// Descreva esta função...
+function callsaldoo(ids_card) {
+  contclick = contclick + 1;
+  if (contclick >= 3) {
+    Swal.fire('Deletando...');
+    function deleteRow() {
+      fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidsaldo+"/"+(idss.slice((-ids_card))[0])+"/?user_field_names=true", {
+      method: "DELETE",
+      headers: {
+      "Authorization": "Token " + bb_baserow_token
+      }
+      })
+    }
+    deleteRow();
+    var clockdelete = setInterval(calldelete, 1000);
+  }
 }
 
 
