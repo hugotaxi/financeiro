@@ -1,4 +1,4 @@
-var lat, long, key_do_google, total2, tabelaidsaldo, latitude, longitude, porcentagem, polilinha, lat0, lat1, lat2, tabelaidgasto, saidaa, log0, log1, log2, tabelaidgastodata, distanciatotal, distancia, tempo, tabelaidsaldodata, total1, tabelaidcorridavalor, porcetagem1, endereco_texto, lng, tabelaidlogin, distanciap, tabelaidloginnome, distanciap1, tabelaidcorridacliente, tabelaidcorridas;
+var lat, long, key_do_google, total2, kmtotal, consumocarro, total1, tabelaidsaldo, latitude, longitude, porcentagem, polilinha, lucro, lat0, lat1, lat2, valorlitro, tabelaidgasto, saidaa, log0, log1, totalcombustivel, log2, hospedagemealimentacao, tabelaidgastodata, distanciatotal, distancia, tempo, litrostotal, tabelaidsaldodata, gastototal, tabelaidcorridavalor, porcetagem1, endereco_texto, lng, tabelaidlogin, distanciap, tabelaidloginnome, distanciap1, tabelaidcorridacliente, tabelaidcorridas;
 
 // Descreva esta função...
 function calculos() {
@@ -173,6 +173,21 @@ function linha() {
   }
 }
 
+// Descreva esta função...
+function calculos2() {
+  total1 = (txt_to_number(distanciatotal)) * 3;
+  total1 = (format_decimal_number((txt_to_number(total1)), 2, false));
+  $("#tx1").html((['Distancia: ',txt_to_number(distanciatotal),'km'].join('')));
+  $("#tx2").html(('' + String(tempo)));
+  $("#tx3").html(('Cobrar R$ ' + String(total1)));
+  if (distanciatotal > 500) {
+    hospedagemealimentacao = '200.00';
+    $("#tx4").html('Hosp+Alim : Sim');
+  } else {
+    $("#tx4").html('Hosp+Alim : Não');
+  }
+}
+
 
 //feito com bootblocks.com.br
   key_do_google = 'AIzaSyAut0bHyEfU5ozP9Ww90AhF6UpYBylL6BA';
@@ -193,6 +208,11 @@ function linha() {
   document.getElementById('card_iniciar').style.left = "0";
   document.getElementById('card_iniciar').style.right = "0";
   document.getElementById('card_iniciar').style.zIndex = "20";
+  document.getElementById('cardavanced').style.position = "fixed";
+  document.getElementById('cardavanced').style.top = "0px";
+  document.getElementById('cardavanced').style.left = "0";
+  document.getElementById('cardavanced').style.right = "0";
+  document.getElementById('cardavanced').style.zIndex = "20";
   var map;
   var Circles = [];
   var Polylines = [];
@@ -226,9 +246,28 @@ function linha() {
   $("#"+'card_iniciar').css("margin-right", 5+ "px");
   $("#"+'card_iniciar').css("margin-top", 10+ "px");
   $("#"+'card_iniciar').css("margin-bottom", 10+ "px");
+  $("#cardavanced").css("background-color", "#ffffff");
+  document.getElementById('cardavanced').style.height = '' + "px";
+  document.getElementById('cardavanced').style.width = '95' + "%";
+  document.getElementById('cardavanced').style.height = "auto";
+  $("#"+'cardavanced').css("margin-left", 5+ "px");
+  $("#"+'cardavanced').css("margin-right", 5+ "px");
+  $("#"+'cardavanced').css("margin-top", 10+ "px");
+  $("#"+'cardavanced').css("margin-bottom", 10+ "px");
 
 
         function qclick() {
+            let elementoClick = document.getElementById('btnresumo');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      window.location.href = "index.html";
+                });
+            }
+        }
+        qclick();
+
+
+        function qclick2() {
             let elementoClick = document.getElementById('location');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
@@ -263,10 +302,10 @@ function linha() {
                 });
             }
         }
-        qclick();
+        qclick2();
 
 
-        function qclick2() {
+        function qclick3() {
             let elementoClick = document.getElementById('vai');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
@@ -285,10 +324,10 @@ function linha() {
                 });
             }
         }
-        qclick2();
+        qclick3();
 
 
-        function qclick3() {
+        function qclick4() {
             let elementoClick = document.getElementById('extra');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
@@ -296,7 +335,7 @@ function linha() {
                 });
             }
         }
-        qclick3();
+        qclick4();
 
 function onMapInitilize(){
   map.setOptions({streetViewControl: false});
@@ -372,6 +411,18 @@ function onMapInitilize(){
   addAutocomplete();
 };
 
+//feito com bootblocks.com.br
+  kmtotal = 0;
+  lucro = 0;
+  totalcombustivel = 0;
+  litrostotal = 0;
+  gastototal = 0;
+  valorlitro = 6.2;
+  consumocarro = 12;
+  hospedagemealimentacao = [];
+  $("#"+'cardavanced').hide();
+  $("#"+'telaresutado').hide();
+
 function onMapClick(event) {
 lat = event.latLng.lat();
 long = event.latLng.lng();
@@ -422,6 +473,54 @@ long = event.latLng.lng();
     Makers.push(marker);
   }
 }
+
+
+        function qclick5() {
+            let elementoClick = document.getElementById('btnavancado');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      calculos2();
+  $("#"+'card_iniciar').hide();
+  $("#"+'cardavanced').show();
+
+                });
+            }
+        }
+        qclick5();
+
+
+        function qclick6() {
+            let elementoClick = document.getElementById('callinform2');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      consumocarro = document.getElementById('txconsumo').value;
+  valorlitro = document.getElementById('txlitro').value;
+  hospedagemealimentacao = document.getElementById('txextra').value;
+  if (document.getElementById('txconsumo').value == '') {
+    consumocarro = 12;
+  }
+  if (document.getElementById('txlitro').value == '') {
+    valorlitro = 6.2;
+  }
+  if (document.getElementById('txextra').value == '') {
+    hospedagemealimentacao = 200;
+  }
+  kmtotal = (txt_to_number((distanciatotal * 2)));
+  totalcombustivel = (txt_to_number(((kmtotal / consumocarro) * valorlitro)));
+  litrostotal = (txt_to_number((kmtotal / consumocarro)));
+  gastototal = totalcombustivel + (txt_to_number(hospedagemealimentacao));
+  lucro = total1 - gastototal;
+  $("#tx5").html(('KM total : ' + String(kmtotal)));
+  $("#tx6").html((String(format_decimal_number(litrostotal, 2, false)) + ' Litros'));
+  $("#tx7").html(('Total de combustivel R$ ' + String(format_decimal_number(totalcombustivel, 2, false))));
+  $("#tx8").html(('comb+alim R$' + String(format_decimal_number(gastototal, 2, false))));
+  $("#tx9").html(('Lucro R$ ' + String(format_decimal_number(lucro, 2, false))));
+  $("#"+'telaresutado').show();
+
+                });
+            }
+        }
+        qclick6();
 function txt_to_number(txt){
             txt = txt+"";
             if(txt.includes(",")){
