@@ -1,4 +1,34 @@
-var valorextra, resultado_pesquisa, idquantcorrida, tabelaidsaldo, resultadodiaria, resultadogastos, resultado_linhas, resugastodia, areceberhoje, Item, abrirtela, tabelaidgasto, somagastodia, tabelaidsaldodata, criarcodigo, resposta_inserir_linha, tabelaidagendamento, tabelaagendadata, dataamanha, tabelaidgastodata, idd, tabelaidcorridas, tabelaidgastoinformacao, localdacorrida, tabelaidcorridainformacao, valorss, idnsaldo, id, opcaoselect, ultimocodigo, temporizador2, idngastodia, tabelaidlogin, abastecimento, idquantdecorridahj, somadesaldo, todosgastodia, tabelaidloginnome, todosareceber, quantabastecimento, todosareceberhoje, valorareceberhoje, idss, idareceber, todasdiarias, somadiarias, todosgastos, idngasto, todosvalores, vlabastecimento, locaiss, tabelaidcorridacliente, somagastos, somaareceber, tabelaidcorridavalor, datass, tabelaidmensal, tabelaidmensalmes, temporizador_1, todossaldos, contclick;
+var valorextra, tabelaidsaldo, resultado_pesquisa, idquantcorrida, resultadodiaria, resultadogastos, resultado_linhas, resugastodia, areceberhoje, Item, abrirtela, tabelaidsaldodata, tabelaidagendamento, tabelaagendadata, dataamanha, tabelaidgasto, somagastodia, criarcodigo, resposta_inserir_linha, tabelaidgastodata, idd, tabelaidcorridas, tabelaidgastoinformacao, localdacorrida, tabelaidcorridainformacao, valorss, idnsaldo, id, opcaoselect, tabelaidlogin, ultimocodigo, idngastodia, abastecimento, idquantdecorridahj, somadesaldo, tabelaidloginnome, todosgastodia, todosareceber, quantabastecimento, todosareceberhoje, valorareceberhoje, idss, idareceber, todasdiarias, somadiarias, todosgastos, idngasto, todosvalores, vlabastecimento, locaiss, tabelaidcorridacliente, somagastos, somaareceber, tabelaidcorridavalor, datass, tabelaidmensal, tabelaidmensalmes, temporizador_1, todossaldos, temporizador2, contclick;
+
+// Descreva esta função...
+function callveragendamentos() {
+  function getRowsSearch() {
+    fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidagendamento+"/?user_field_names=true&filter__field_"+tabelaagendadata+"__"+"equal"+"="+dataamanha+ "&order_by="+"+"+'data', {
+    method: "GET",
+    headers: {
+    "Authorization": "Token " + bb_baserow_token
+    }
+    })
+    .then(response => response.json())
+    .then(data => {
+      resultado_pesquisa = data.results;
+        for (var Item_index2 in resultado_pesquisa) {
+      Item = resultado_pesquisa[Item_index2];
+      $("#text_1").html('<span style="font-size:16px; color:#ff0000; font-weight:bold; font-style:italic;">'+'Atenção'+' </span>');
+      Swal.fire({
+      icon: 'error',
+      title: 'Atençao ',
+      text: 'Amanha Temos Agendamento'
+      });
+    }
+
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+  }
+  getRowsSearch();
+}
 
 // Descreva esta função...
 function codigoabastecimento() {
@@ -12,16 +42,46 @@ function codigoabastecimento() {
     .then(response => response.json())
     .then(data => {
       resultado_pesquisa = data.results;
-        for (var Item_index2 in resultado_pesquisa) {
-      Item = resultado_pesquisa[Item_index2];
+        for (var Item_index3 in resultado_pesquisa) {
+      Item = resultado_pesquisa[Item_index3];
       ultimocodigo = (Item['codigo']);
       localStorage.setItem('codigo',ultimocodigo);
     }
-    temporizador2 = setInterval(function(){
-      dataamanha = "06/12/2025";
-      callveragendamentos();
-      clearInterval(temporizador2);
-    }, 2000);
+
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+  }
+  getRowsSearch();
+}
+
+// Descreva esta função...
+function inicio() {
+  function getRowsSearch() {
+    fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidsaldo+"/?user_field_names=true&filter__field_"+tabelaidsaldodata+"__"+"equal"+"="+(new Date().toLocaleDateString())+ "&order_by="+"+"+'data', {
+    method: "GET",
+    headers: {
+    "Authorization": "Token " + bb_baserow_token
+    }
+    })
+    .then(response => response.json())
+    .then(data => {
+      resultadodiaria = data.results;
+        $("#l2").html('lkkk');
+    for (var Item_index4 in resultadodiaria) {
+      Item = resultadodiaria[Item_index4];
+      idquantcorrida = idquantcorrida + 1;
+      todasdiarias.push((Item['valor']));
+      $("#lbultima").html('<span style="font-size:10px; color:#000000; font-weight:normal; font-style:normal;">'+([Item['local'],' / ',Item['valor'],' / ',Item['hora']].join(''))+' </span>');
+    }
+    for (var Item_index5 in todasdiarias) {
+      Item = todasdiarias[Item_index5];
+      somadiarias = (txt_to_number(somadiarias)) + (txt_to_number(Item));
+    }
+    $("#l1").html('<span style="font-size:13px; color:#000000; font-weight:bold; font-style:normal;">'+(['Diaria: ',format_decimal_number(somadiarias, 2, false),' N° ',idquantcorrida].join(''))+' </span>');
+    $("#l2").html('<span style="font-size:13px; color:#000000; font-weight:bold; font-style:normal;">'+('Media por corrida: ' + String(format_decimal_number((somadiarias / idquantcorrida), 2, false)))+' </span>');
+    codigoabastecimento();
 
     })
     .catch((error) => {
@@ -100,71 +160,6 @@ function svgasto() {
     }
     insertRow();
   }
-}
-
-// Descreva esta função...
-function callveragendamentos() {
-  function getRowsSearch() {
-    fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidagendamento+"/?user_field_names=true&filter__field_"+tabelaagendadata+"__"+"equal"+"="+dataamanha+ "&order_by="+"+"+'data', {
-    method: "GET",
-    headers: {
-    "Authorization": "Token " + bb_baserow_token
-    }
-    })
-    .then(response => response.json())
-    .then(data => {
-      resultado_pesquisa = data.results;
-        for (var Item_index3 in resultado_pesquisa) {
-      Item = resultado_pesquisa[Item_index3];
-      $("#text_1").html('<span style="font-size:16px; color:#ff0000; font-weight:bold; font-style:italic;">'+'Atenção'+' </span>');
-      Swal.fire({
-      icon: 'error',
-      title: 'Atençao ',
-      text: 'Amanha Temos Agendamento'
-      });
-    }
-
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-  }
-  getRowsSearch();
-}
-
-// Descreva esta função...
-function inicio() {
-  function getRowsSearch() {
-    fetch(bb_baserow_url+"api/database/rows/table/"+tabelaidsaldo+"/?user_field_names=true&filter__field_"+tabelaidsaldodata+"__"+"equal"+"="+(new Date().toLocaleDateString())+ "&order_by="+"+"+'data', {
-    method: "GET",
-    headers: {
-    "Authorization": "Token " + bb_baserow_token
-    }
-    })
-    .then(response => response.json())
-    .then(data => {
-      resultadodiaria = data.results;
-        $("#l2").html('lkkk');
-    for (var Item_index4 in resultadodiaria) {
-      Item = resultadodiaria[Item_index4];
-      idquantcorrida = idquantcorrida + 1;
-      todasdiarias.push((Item['valor']));
-      $("#lbultima").html('<span style="font-size:10px; color:#000000; font-weight:normal; font-style:normal;">'+([Item['local'],' / ',Item['valor'],' / ',Item['hora']].join(''))+' </span>');
-    }
-    for (var Item_index5 in todasdiarias) {
-      Item = todasdiarias[Item_index5];
-      somadiarias = (txt_to_number(somadiarias)) + (txt_to_number(Item));
-    }
-    $("#l1").html('<span style="font-size:13px; color:#000000; font-weight:bold; font-style:normal;">'+(['Diaria: ',format_decimal_number(somadiarias, 2, false),' N° ',idquantcorrida].join(''))+' </span>');
-    $("#l2").html('<span style="font-size:13px; color:#000000; font-weight:bold; font-style:normal;">'+('Media por corrida: ' + String(format_decimal_number((somadiarias / idquantcorrida), 2, false)))+' </span>');
-    codigoabastecimento();
-
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-  }
-  getRowsSearch();
 }
 
 // Descreva esta função...
@@ -548,6 +543,32 @@ function mostrar() {
     $("#select_1").append("<option value="+Item+">"+Item+"</option>");
   }
 
+//feito com bootblocks.com.br
+  tabelaidsaldo = '177842';
+  tabelaidsaldodata = '1188503';
+  tabelaidlogin = '177839';
+  tabelaidloginnome = '1188492';
+  tabelaidcorridas = '177840';
+  tabelaidcorridacliente = '1188495';
+  tabelaidcorridavalor = '1188513';
+  tabelaidcorridainformacao = '1188496';
+  tabelaidgasto = '177843';
+  tabelaidgastoinformacao = '1188504';
+  tabelaidgastodata = '1188515';
+  tabelaidmensal = '209979';
+  tabelaidmensalmes = '1448198';
+  tabelaidagendamento = '759064';
+  tabelaagendadata = '6422239';
+  temporizador_1 = setInterval(function(){
+    dataamanha = "17/12/2025";
+    callveragendamentos();
+    clearInterval(temporizador_1);
+    temporizador2 = setInterval(function(){
+      inicio();
+      clearInterval(temporizador2);
+    }, 1800);
+  }, 3);
+
 $("#select_1").change(function(){
   if ($(this).val() == 'clientes') {
     window.location.href = "clientes.html";} else if ($(this).val() == 'saldos/gastos') {
@@ -591,27 +612,6 @@ var bb_baserow_url = 'https://api.baserow.io/';
   localdacorrida = [];
   ultimocodigo = 0;
   temporizador2 = 0;
-
-//feito com bootblocks.com.br
-  tabelaidsaldo = '177842';
-  tabelaidsaldodata = '1188503';
-  tabelaidlogin = '177839';
-  tabelaidloginnome = '1188492';
-  tabelaidcorridas = '177840';
-  tabelaidcorridacliente = '1188495';
-  tabelaidcorridavalor = '1188513';
-  tabelaidcorridainformacao = '1188496';
-  tabelaidgasto = '177843';
-  tabelaidgastoinformacao = '1188504';
-  tabelaidgastodata = '1188515';
-  tabelaidmensal = '209979';
-  tabelaidmensalmes = '1448198';
-  tabelaidagendamento = '759064';
-  tabelaagendadata = '6422239';
-  temporizador_1 = setInterval(function(){
-    inicio();
-    clearInterval(temporizador_1);
-  }, 500);
 
 //feito com bootblocks.com.br
   document.getElementById('div_1').style['background-image'] = 'url("assets/victorcima1.jpg")';
