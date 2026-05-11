@@ -1,15 +1,11 @@
-var lat, long, key_do_google, total2, kmtotal, consumocarro, total1, tabelaidsaldo, latitude, longitude, porcentagem, polilinha, lucro, lat0, lat1, lat2, valorlitro, tabelaidgasto, saidaa, log0, log1, totalcombustivel, log2, hospedagemealimentacao, tabelaidgastodata, distanciatotal, distancia, tempo, litrostotal, tabelaidsaldodata, gastototal, tabelaidcorridavalor, porcetagem1, endereco_texto, lng, tabelaidlogin, distanciap, tabelaidloginnome, distanciap1, tabelaidcorridacliente, tabelaidcorridas;
+var lat, long, key_do_google, kmtotal, total1, consumocarro, tabelaidsaldo, lucro, lat0, lat1, lat2, latitude, longitude, polilinha, valorlitro, tabelaidgasto, totalcombustivel, saidaa, log0, log1, log2, total2, hospedagemealimentacao, tabelaidgastodata, litrostotal, distanciatotal, distancia, tempo, tabelaidsaldodata, gastototal, tabelaidcorridavalor, endereco_texto, lng, tabelaidlogin, distanciap, tabelaidloginnome, distanciap1, tabelaidcorridacliente, tabelaidcorridas;
 
 // Descreva esta função...
 function calculos() {
-  total2 = (txt_to_number(distanciatotal)) * 3.4;
-  porcentagem = (txt_to_number(((28 * (txt_to_number(total2))) / 100)));
-  total2 = (txt_to_number(total2)) + (txt_to_number(porcentagem));
-  total2 = (txt_to_number(total2)) + 4.4;
-  total1 = (txt_to_number(distanciatotal)) * 2.9;
-  porcetagem1 = (txt_to_number(((28 * (txt_to_number(total1))) / 100)));
-  total1 = (txt_to_number(total1)) + (txt_to_number(porcetagem1));
-  total1 = (txt_to_number(total1)) + 4.4;
+  total1 = (txt_to_number(distanciatotal)) * 4.31;
+  total1 = (txt_to_number(total1)) + 5;
+  total2 = (txt_to_number(distanciatotal)) * 5.06;
+  total2 = (txt_to_number(total2)) + 5;
   $("#distancia").html((String(txt_to_number(distanciatotal)) + ' KM'));
   $("#bandeira1").html(('B1=' + String(format_decimal_number((txt_to_number(total1)), 2, false))));
   $("#bandeira2").html(('B2=' + String(format_decimal_number((txt_to_number(total2)), 2, false))));
@@ -255,6 +251,18 @@ function calculos2() {
   $("#"+'cardavanced').css("margin-top", 10+ "px");
   $("#"+'cardavanced').css("margin-bottom", 10+ "px");
 
+//feito com bootblocks.com.br
+  kmtotal = 0;
+  lucro = 0;
+  totalcombustivel = 0;
+  litrostotal = 0;
+  gastototal = 0;
+  valorlitro = 6.2;
+  consumocarro = 12;
+  hospedagemealimentacao = [];
+  $("#"+'cardavanced').hide();
+  $("#"+'telaresutado').hide();
+
 
         function qclick() {
             let elementoClick = document.getElementById('btnresumo');
@@ -265,77 +273,6 @@ function calculos2() {
             }
         }
         qclick();
-
-
-        function qclick2() {
-            let elementoClick = document.getElementById('location');
-            if (elementoClick) {
-                elementoClick.addEventListener("click", function () {
-                      if (saidaa == 0) {
-    if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-    latitude = position.coords.latitude;
-    longitude = position.coords.longitude;
-      lat0 = latitude;
-      log0 = longitude;
-      for (var i = 0; i < Makers.length; i++) {
-      if (Makers[i].marker_id === 0) {
-      Makers[i].setMap(null);
-      Makers.splice(i, 1);
-      }
-      }
-      var marker = new google.maps.Marker({
-      position: {lat: lat0, lng: log0},
-      map: map,
-      marker_id: 0
-      });
-      Makers.push(marker);
-    }, function() {
-    handleLocationError(true, infoWindow, map.getCenter());
-    });
-    } else {
-    // Browser doesn't support Geolocation
-    handleLocationError(false, infoWindow, map.getCenter());
-    }
-  }
-
-                });
-            }
-        }
-        qclick2();
-
-
-        function qclick3() {
-            let elementoClick = document.getElementById('vai');
-            if (elementoClick) {
-                elementoClick.addEventListener("click", function () {
-                      $("#endereco_destino").val('');
-  if (saidaa == 0) {
-    saidaa = 1;
-    $("#extra").html('Fim :');
-  } else if (saidaa == 1) {
-    linha();
-    saidaa = 2;
-    $("#extra").html('Meio :');
-  } else if (saidaa == 2) {
-    linha();
-  }
-
-                });
-            }
-        }
-        qclick3();
-
-
-        function qclick4() {
-            let elementoClick = document.getElementById('extra');
-            if (elementoClick) {
-                elementoClick.addEventListener("click", function () {
-                      window.location.href = "index.html";
-                });
-            }
-        }
-        qclick4();
 
 function onMapInitilize(){
   map.setOptions({streetViewControl: false});
@@ -411,18 +348,6 @@ function onMapInitilize(){
   addAutocomplete();
 };
 
-//feito com bootblocks.com.br
-  kmtotal = 0;
-  lucro = 0;
-  totalcombustivel = 0;
-  litrostotal = 0;
-  gastototal = 0;
-  valorlitro = 6.2;
-  consumocarro = 12;
-  hospedagemealimentacao = [];
-  $("#"+'cardavanced').hide();
-  $("#"+'telaresutado').hide();
-
 function onMapClick(event) {
 lat = event.latLng.lat();
 long = event.latLng.lng();
@@ -473,6 +398,77 @@ long = event.latLng.lng();
     Makers.push(marker);
   }
 }
+
+
+        function qclick2() {
+            let elementoClick = document.getElementById('location');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      if (saidaa == 0) {
+    if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+    latitude = position.coords.latitude;
+    longitude = position.coords.longitude;
+      lat0 = latitude;
+      log0 = longitude;
+      for (var i = 0; i < Makers.length; i++) {
+      if (Makers[i].marker_id === 0) {
+      Makers[i].setMap(null);
+      Makers.splice(i, 1);
+      }
+      }
+      var marker = new google.maps.Marker({
+      position: {lat: lat0, lng: log0},
+      map: map,
+      marker_id: 0
+      });
+      Makers.push(marker);
+    }, function() {
+    handleLocationError(true, infoWindow, map.getCenter());
+    });
+    } else {
+    // Browser doesn't support Geolocation
+    handleLocationError(false, infoWindow, map.getCenter());
+    }
+  }
+
+                });
+            }
+        }
+        qclick2();
+
+
+        function qclick3() {
+            let elementoClick = document.getElementById('vai');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      $("#endereco_destino").val('');
+  if (saidaa == 0) {
+    saidaa = 1;
+    $("#extra").html('Fim :');
+  } else if (saidaa == 1) {
+    linha();
+    saidaa = 2;
+    $("#extra").html('Meio :');
+  } else if (saidaa == 2) {
+    linha();
+  }
+
+                });
+            }
+        }
+        qclick3();
+
+
+        function qclick4() {
+            let elementoClick = document.getElementById('extra');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      window.location.href = "index.html";
+                });
+            }
+        }
+        qclick4();
 
 
         function qclick5() {
