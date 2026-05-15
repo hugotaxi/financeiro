@@ -560,7 +560,7 @@ function mostrar() {
   tabelaidagendamento = '759064';
   tabelaagendadata = '6422239';
   temporizador_1 = setInterval(function(){
-    dataamanha = "17/12/2025";
+    dataamanha = "15/05/2026";
     callveragendamentos();
     clearInterval(temporizador_1);
     temporizador2 = setInterval(function(){
@@ -690,32 +690,6 @@ var bb_baserow_url = 'https://api.baserow.io/';
 
 
         function qclick6() {
-            let elementoClick = document.getElementById('icon_6');
-            if (elementoClick) {
-                elementoClick.addEventListener("click", function () {
-                      valorextra = '6.00';
-  svsaldo();
-
-                });
-            }
-        }
-        qclick6();
-
-
-        function qclick7() {
-            let elementoClick = document.getElementById('icon_15');
-            if (elementoClick) {
-                elementoClick.addEventListener("click", function () {
-                      valorextra = '15.00';
-  svsaldo();
-
-                });
-            }
-        }
-        qclick7();
-
-
-        function qclick8() {
             let elementoClick = document.getElementById('icon_16');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
@@ -725,36 +699,36 @@ var bb_baserow_url = 'https://api.baserow.io/';
                 });
             }
         }
+        qclick6();
+
+
+        function qclick7() {
+            let elementoClick = document.getElementById('icon_21');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      valorextra = '21.00';
+  svsaldo();
+
+                });
+            }
+        }
+        qclick7();
+
+
+        function qclick8() {
+            let elementoClick = document.getElementById('icon_10');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      valorextra = '10.00';
+  svsaldo();
+
+                });
+            }
+        }
         qclick8();
 
 
         function qclick9() {
-            let elementoClick = document.getElementById('icon_7');
-            if (elementoClick) {
-                elementoClick.addEventListener("click", function () {
-                      valorextra = '7.00';
-  svsaldo();
-
-                });
-            }
-        }
-        qclick9();
-
-
-        function qclick10() {
-            let elementoClick = document.getElementById('icon_8');
-            if (elementoClick) {
-                elementoClick.addEventListener("click", function () {
-                      valorextra = '8.00';
-  svsaldo();
-
-                });
-            }
-        }
-        qclick10();
-
-
-        function qclick11() {
             let elementoClick = document.getElementById('icon_17');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
@@ -764,14 +738,40 @@ var bb_baserow_url = 'https://api.baserow.io/';
                 });
             }
         }
+        qclick9();
+
+
+        function qclick10() {
+            let elementoClick = document.getElementById('icon_11');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      valorextra = '11.00';
+  svsaldo();
+
+                });
+            }
+        }
+        qclick10();
+
+
+        function qclick11() {
+            let elementoClick = document.getElementById('icon_22');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      valorextra = '22.00';
+  svsaldo();
+
+                });
+            }
+        }
         qclick11();
 
 
         function qclick12() {
-            let elementoClick = document.getElementById('icon_9');
+            let elementoClick = document.getElementById('icon_12');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
-                      valorextra = '9.00';
+                      valorextra = '12.00';
   svsaldo();
 
                 });
@@ -794,10 +794,10 @@ var bb_baserow_url = 'https://api.baserow.io/';
 
 
         function qclick14() {
-            let elementoClick = document.getElementById('icon_10');
+            let elementoClick = document.getElementById('icon_23');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
-                      valorextra = '10.00';
+                      valorextra = '23.00';
   svsaldo();
 
                 });
@@ -807,56 +807,6 @@ var bb_baserow_url = 'https://api.baserow.io/';
 
 
         function qclick15() {
-            let elementoClick = document.getElementById('icon_19');
-            if (elementoClick) {
-                elementoClick.addEventListener("click", function () {
-                      valorextra = '19.00';
-  svsaldo();
-
-                });
-            }
-        }
-        qclick15();
-
-
-        function qclick16() {
-            let elementoClick = document.getElementById('icon_11');
-            if (elementoClick) {
-                elementoClick.addEventListener("click", function () {
-                      valorextra = '11.00';
-  svsaldo();
-
-                });
-            }
-        }
-        qclick16();
-
-
-        function qclick17() {
-            let elementoClick = document.getElementById('icon_12');
-            if (elementoClick) {
-                elementoClick.addEventListener("click", function () {
-                      valorextra = '12.00';
-  svsaldo();
-
-                });
-            }
-        }
-        qclick17();
-
-
-        function qclick18() {
-            let elementoClick = document.getElementById('space_1');
-            if (elementoClick) {
-                elementoClick.addEventListener("click", function () {
-                      window.location.href = "corridasclientes.html";
-                });
-            }
-        }
-        qclick18();
-
-
-        function qclick19() {
             let elementoClick = document.getElementById('icon_13');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
@@ -866,10 +816,36 @@ var bb_baserow_url = 'https://api.baserow.io/';
                 });
             }
         }
-        qclick19();
+        qclick15();
 
 
-        function qclick20() {
+        function qclick16() {
+            let elementoClick = document.getElementById('icon_19');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      valorextra = '19.00';
+  svsaldo();
+
+                });
+            }
+        }
+        qclick16();
+
+
+        function qclick17() {
+            let elementoClick = document.getElementById('icon_24');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      valorextra = '24.00';
+  svsaldo();
+
+                });
+            }
+        }
+        qclick17();
+
+
+        function qclick18() {
             let elementoClick = document.getElementById('icon_14');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
@@ -879,7 +855,83 @@ var bb_baserow_url = 'https://api.baserow.io/';
                 });
             }
         }
+        qclick18();
+
+
+        function qclick19() {
+            let elementoClick = document.getElementById('icon_25');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      valorextra = '25.00';
+  svsaldo();
+
+                });
+            }
+        }
+        qclick19();
+
+
+        function qclick20() {
+            let elementoClick = document.getElementById('icon_20');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      valorextra = '20.00';
+  svsaldo();
+
+                });
+            }
+        }
         qclick20();
+
+
+        function qclick21() {
+            let elementoClick = document.getElementById('icon_15');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      valorextra = '15.00';
+  svsaldo();
+
+                });
+            }
+        }
+        qclick21();
+
+
+        function qclick22() {
+            let elementoClick = document.getElementById('icon_26');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      valorextra = '27.00';
+  svsaldo();
+
+                });
+            }
+        }
+        qclick22();
+
+
+        function qclick23() {
+            let elementoClick = document.getElementById('icon_27');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      valorextra = '30.00';
+  svsaldo();
+
+                });
+            }
+        }
+        qclick23();
+
+
+        function qclick24() {
+            let elementoClick = document.getElementById('space_1');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      window.location.href = "corridasclientes.html";
+                });
+            }
+        }
+        qclick24();
 function txt_to_number(txt){
             txt = txt+"";
             if(txt.includes(",")){
