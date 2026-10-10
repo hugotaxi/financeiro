@@ -186,7 +186,7 @@ function calculos2() {
 
 
 //feito com bootblocks.com.br
-  key_do_google = 'AIzaSyAut0bHyEfU5ozP9Ww90AhF6UpYBylL6BA';
+  key_do_google = 'AIzaSyADjzaw8qYnzunedO0B9A145OuNJFeojO8';
   tabelaidsaldo = '208538';
   tabelaidgasto = '208539';
   tabelaidgastodata = '1438289';
