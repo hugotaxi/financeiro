@@ -1,4 +1,4 @@
-var lat, long, key_do_google, kmtotal, total1, consumocarro, tabelaidsaldo, lucro, lat0, lat1, lat2, latitude, longitude, polilinha, valorlitro, tabelaidgasto, totalcombustivel, saidaa, log0, log1, log2, total2, hospedagemealimentacao, tabelaidgastodata, litrostotal, distanciatotal, distancia, tempo, tabelaidsaldodata, gastototal, tabelaidcorridavalor, endereco_texto, lng, tabelaidlogin, distanciap, tabelaidloginnome, distanciap1, tabelaidcorridacliente, tabelaidcorridas;
+var lat, long, key_do_google, kmtotal, consumocarro, total1, promocaob2, tabelaidsaldo, lucro, lat0, lat1, lat2, latitude, longitude, valorlitro, polilinha, tabelaidgasto, totalcombustivel, saidaa, log0, log1, log2, total2, tabelaidgastodata, litrostotal, distanciatotal, distancia, tempo, tabelaidsaldodata, gastototal, tabelaidcorridavalor, endereco_texto, lng, tabelaidlogin, distanciap, hospedagemealimentacao, tabelaidloginnome, distanciap1, tabelaidcorridacliente, tabelaidcorridas;
 
 // Descreva esta função...
 function calculos() {
@@ -175,12 +175,12 @@ function calculos2() {
   total1 = (format_decimal_number((txt_to_number(total1)), 2, false));
   $("#tx1").html((['Distancia: ',txt_to_number(distanciatotal),'km'].join('')));
   $("#tx2").html(('' + String(tempo)));
-  $("#tx3").html(('Cobrar R$ ' + String(total1)));
+  $("#tx3").html(('Aproximado R$' + String(total1)));
   if (distanciatotal > 500) {
     hospedagemealimentacao = '200.00';
-    $("#tx4").html('Hosp+Alim : Sim');
+    $("#tx44").html('<span style="font-size:16px; color:#ffff00; font-weight:bold; font-style:italic;">'+'Atenção Hotel'+' </span>');
   } else {
-    $("#tx4").html('Hosp+Alim : Não');
+    $("#tx44").html('');
   }
 }
 
@@ -257,22 +257,12 @@ function calculos2() {
   totalcombustivel = 0;
   litrostotal = 0;
   gastototal = 0;
-  valorlitro = 6.2;
-  consumocarro = 12;
+  valorlitro = 4;
+  consumocarro = 11;
   hospedagemealimentacao = [];
+  promocaob2 = 0;
   $("#"+'cardavanced').hide();
   $("#"+'telaresutado').hide();
-
-
-        function qclick() {
-            let elementoClick = document.getElementById('btnresumo');
-            if (elementoClick) {
-                elementoClick.addEventListener("click", function () {
-                      window.location.href = "index.html";
-                });
-            }
-        }
-        qclick();
 
 function onMapInitilize(){
   map.setOptions({streetViewControl: false});
@@ -400,7 +390,7 @@ long = event.latLng.lng();
 }
 
 
-        function qclick2() {
+        function qclick() {
             let elementoClick = document.getElementById('location');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
@@ -435,6 +425,33 @@ long = event.latLng.lng();
                 });
             }
         }
+        qclick();
+
+
+        function qclick2() {
+            let elementoClick = document.getElementById('callinform2');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      consumocarro = document.getElementById('txconsumo').value;
+  valorlitro = document.getElementById('txlitro').value;
+  if (document.getElementById('txconsumo').value == '') {
+    consumocarro = 11;
+  }
+  if (document.getElementById('txlitro').value == '') {
+    valorlitro = 4;
+  }
+  kmtotal = (txt_to_number((distanciatotal * 2)));
+  totalcombustivel = (txt_to_number(((kmtotal / consumocarro) * valorlitro)));
+  litrostotal = (txt_to_number((kmtotal / consumocarro)));
+  gastototal = totalcombustivel + (txt_to_number(hospedagemealimentacao));
+  lucro = total1 - gastototal;
+  $("#tx5").html(('KM total : ' + String(kmtotal)));
+  $("#tx7").html(([format_decimal_number(litrostotal, 2, false),' Litros / R$ ',format_decimal_number(totalcombustivel, 2, false)].join('')));
+  $("#"+'telaresutado').show();
+
+                });
+            }
+        }
         qclick2();
 
 
@@ -461,7 +478,7 @@ long = event.latLng.lng();
 
 
         function qclick4() {
-            let elementoClick = document.getElementById('extra');
+            let elementoClick = document.getElementById('btnresumo');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
                       window.location.href = "index.html";
@@ -472,6 +489,17 @@ long = event.latLng.lng();
 
 
         function qclick5() {
+            let elementoClick = document.getElementById('extra');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      window.location.href = "index.html";
+                });
+            }
+        }
+        qclick5();
+
+
+        function qclick6() {
             let elementoClick = document.getElementById('btnavancado');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
@@ -482,41 +510,89 @@ long = event.latLng.lng();
                 });
             }
         }
-        qclick5();
+        qclick6();
 
 
-        function qclick6() {
-            let elementoClick = document.getElementById('callinform2');
+        function qclick7() {
+            let elementoClick = document.getElementById('btncopy2');
             if (elementoClick) {
                 elementoClick.addEventListener("click", function () {
-                      consumocarro = document.getElementById('txconsumo').value;
-  valorlitro = document.getElementById('txlitro').value;
-  hospedagemealimentacao = document.getElementById('txextra').value;
-  if (document.getElementById('txconsumo').value == '') {
-    consumocarro = 12;
+                      function copyText(){
+  var text = (['Olha, pelo taxímetro essa corrida ficaria em torno de R$',total1,'. Mas consigo fechar com você por um valor fixo de R$'].join(''));
+  if(navigator.clipboard && navigator.clipboard.writeText){
+  navigator.clipboard.writeText(text);
+  }else{
+  var copyText = document.createElement("textarea");
+  copyText.value = text;
+  document.body.appendChild(copyText);
+  copyText.select();
+  copyText.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  document.body.removeChild(copyText);
   }
-  if (document.getElementById('txlitro').value == '') {
-    valorlitro = 6.2;
   }
-  if (document.getElementById('txextra').value == '') {
-    hospedagemealimentacao = 200;
-  }
-  kmtotal = (txt_to_number((distanciatotal * 2)));
-  totalcombustivel = (txt_to_number(((kmtotal / consumocarro) * valorlitro)));
-  litrostotal = (txt_to_number((kmtotal / consumocarro)));
-  gastototal = totalcombustivel + (txt_to_number(hospedagemealimentacao));
-  lucro = total1 - gastototal;
-  $("#tx5").html(('KM total : ' + String(kmtotal)));
-  $("#tx6").html((String(format_decimal_number(litrostotal, 2, false)) + ' Litros'));
-  $("#tx7").html(('Total de combustivel R$ ' + String(format_decimal_number(totalcombustivel, 2, false))));
-  $("#tx8").html(('comb+alim R$' + String(format_decimal_number(gastototal, 2, false))));
-  $("#tx9").html(('Lucro R$ ' + String(format_decimal_number(lucro, 2, false))));
-  $("#"+'telaresutado').show();
+  copyText();
+  Swal.fire('Mensagem Copiada');
 
                 });
             }
         }
-        qclick6();
+        qclick7();
+
+
+        function qclick8() {
+            let elementoClick = document.getElementById('bandeira1');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      function copyText(){
+  var text = (['Olha, pelo taxímetro essa corrida ficaria em torno de R$',format_decimal_number((txt_to_number(total2)), 2, false),'. Mas consigo fechar com você por um valor fixo de R$'].join(''));
+  if(navigator.clipboard && navigator.clipboard.writeText){
+  navigator.clipboard.writeText(text);
+  }else{
+  var copyText = document.createElement("textarea");
+  copyText.value = text;
+  document.body.appendChild(copyText);
+  copyText.select();
+  copyText.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  document.body.removeChild(copyText);
+  }
+  }
+  copyText();
+  Swal.fire('Mensagem Copiada');
+
+                });
+            }
+        }
+        qclick8();
+
+
+        function qclick9() {
+            let elementoClick = document.getElementById('bandeira2');
+            if (elementoClick) {
+                elementoClick.addEventListener("click", function () {
+                      promocaob2 = (txt_to_number(total2)) + (txt_to_number(10));
+  Swal.fire('Mensagem Copiada');
+  function copyText(){
+  var text = (['Olha, pelo taxímetro essa corrida ficaria em torno de R$',format_decimal_number((txt_to_number(promocaob2)), 2, false),'. Mas consigo fechar com você por um valor fixo de R$'].join(''));
+  if(navigator.clipboard && navigator.clipboard.writeText){
+  navigator.clipboard.writeText(text);
+  }else{
+  var copyText = document.createElement("textarea");
+  copyText.value = text;
+  document.body.appendChild(copyText);
+  copyText.select();
+  copyText.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  document.body.removeChild(copyText);
+  }
+  }
+  copyText();
+
+                });
+            }
+        }
+        qclick9();
 function txt_to_number(txt){
             txt = txt+"";
             if(txt.includes(",")){
