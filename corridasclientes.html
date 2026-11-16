@@ -196,7 +196,7 @@
             left: 0 !important;
             width: 100% !important;
             height: 70px !important;
-            display: none !important;
+            display: none;
             align-items: center !important;
             justify-content: center !important;
             gap: 12px !important;
@@ -332,7 +332,7 @@
                     <button class="custom-modal-close" id="icon_1" aria-label="Close" style="background: none; border: none; font-size: 22px; cursor: pointer; color: #94a3b8;"><i class="bi bi-x-lg"></i></button>
                 </div>
                 <div class="custom-modal-body" id="modal-body_1" style="display: flex; flex-direction: column; gap: 8px;">
-                    <!-- ALTERAÇÃO: inputmode="decimal" para forçar o teclado numérico com suporte a decimais -->
+                    <!-- inputmode="decimal" garante o teclado numérico no celular -->
                     <input class="form-control" id="txtvalor" placeholder="Valor (R$)" type="text" inputmode="decimal" style="width: 100% !important;">
                     <input class="form-control" id="txtcorrida" placeholder="Descrição / Rota / Local" type="text" style="width: 100% !important;">
                 </div>
@@ -360,7 +360,7 @@
 <script>
     var xretorno, id, tabelaidlogin, somadesaldo, resultado_pesquisa, Item, resposta_obter_linha, resposta_inserir_linha, id200, tabelaidloginnome, todosvalores, tabelaidcorridas, idapagar, tabelaidcorridacliente, usuarionome, tabelaidsaldo, nomescli200, idd, valor200, informacao200, tabelaidcorridavalor, horas200, tabelaidcorridainformacao, idliberar, tabelaidsaldodata, tabelaidgasto, tabelaidgastoinformacao, tabelaidgastodata, tabelaidmensal, tabelaidmensalmes;
 
-    // Objetos para controle individual de cliques por card corrigidos
+    // Variáveis para controle do clique triplo
     var cliquesPorCard = {};
     var ultimoCardId = null;
     var tempoUltimoClique = 0;
@@ -370,7 +370,7 @@
             fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidcorridas + "/" + idapagar + "/?user_field_names=true", {
                 method: "DELETE",
                 headers: { "Authorization": "Token " + bb_baserow_token }
-            })
+            });
         }
         deleteRow();
         Swal.fire({ title: 'Deletando...', timer: 1000, showConfirmButton: false });
@@ -524,64 +524,63 @@
         $("#lbltudo").html('<strong>' + usuarionome + '</strong> • Total: R$ ' + format_decimal_number(somadesaldo, 2, true));
     }
 
-    // Função corrigida e robusta para detectar 3 cliques no mesmo card
-    function registrarCliqueCard(cardId, realRowId) {
-        var agora = new Date().getTime();
-        
-        // Se passar mais de 1.2 segundo ou clicar em um card diferente, reinicia a contagem
-        if (ultimoCardId !== cardId || (agora - tempoUltimoClique) > 1200) {
-            cliquesPorCard = {};
-            cliquesPorCard[cardId] = 0;
-        }
+    // Configuração unificada do evento de clique triplo nos cards gerados
+    function configurarCliquesCards() {
+        $('.cardview').off('click').on('click', function() {
+            var cardId = $(this).attr('id-unico');
+            var realRowId = $(this).attr('data-row-id');
+            var agora = new Date().getTime();
 
-        ultimoCardId = cardId;
-        tempoUltimoClique = agora;
-        cliquesPorCard[cardId] = (cliquesPorCard[cardId] || 0) + 1;
+            if (ultimoCardId !== cardId || (agora - tempoUltimoClique) > 1000) {
+                cliquesPorCard = {};
+                cliquesPorCard[cardId] = 0;
+            }
 
-        idapagar = realRowId;
+            ultimoCardId = cardId;
+            tempoUltimoClique = agora;
+            cliquesPorCard[cardId] = (cliquesPorCard[cardId] || 0) + 1;
 
-        if (cliquesPorCard[cardId] >= 3) {
-            $("#telabotoes").css("display", "flex");
-            $("#save").hide();
-            $("#lbltudo").html('Selecionado ID: ' + idapagar);
-            cliquesPorCard[cardId] = 0; // Reseta o contador do card
-        }
-    }
+            idapagar = realRowId;
 
-    function calldivisa(xretorno) {
-        var realId = ((resultado_pesquisa[(xretorno - 1)])['id']);
-        registrarCliqueCard('p1_' + xretorno, realId);
-    }
-
-    function calldivisa23(id) {
-        var realId = id200[id200.length - id];
-        registrarCliqueCard('p2_' + id, realId);
+            if (cliquesPorCard[cardId] >= 3) {
+                // Força o painel inferior a aparecer com flex visível
+                document.getElementById('telabotoes').style.setProperty('display', 'flex', 'important');
+                document.getElementById('save').style.setProperty('display', 'none', 'important');
+                $("#lbltudo").html('Selecionado ID: ' + idapagar);
+                cliquesPorCard[cardId] = 0;
+            }
+        });
     }
 
     function chamarlista() {
         id = 0;
+        var htmlCards = "";
         for (var Item_index6 in nomescli200) {
             Item = nomescli200[Item_index6];
             id = id + 1;
             
+            var realId = id200[id200.length - id];
             var valorAtual = valor200.slice((-id))[0];
             var infoAtual = informacao200.slice((-id))[0];
             var horaAtual = horas200.slice((-id))[0];
 
-            var card = '<div onclick="calldivisa23(' + id + ')" class="cardview" id="' + id + '">';
-            card += '  <div class="cardview-left">';
-            card += '    <div class="icon-wrapper"><i class="bi bi-car-front-fill"></i></div>';
-            card += '    <div class="cardview-info">';
-            card += '      <span class="titulo_cardview">' + Item + '</span>';
-            card += '      <span class="subtitulo_cardview"><span style="color:var(--accent-green); font-weight:600;">R$ ' + valorAtual + '</span> • ' + (infoAtual || '') + '</span>';
-            card += '      <span class="texto_adicional_cardview"><i class="bi bi-clock me-1"></i> ' + (horaAtual || '') + '</span>';
-            card += '    </div>';
-            card += '  </div>';
-            card += '</div>';
+            htmlCards += '<div class="cardview" id-unico="p2_' + id + '" data-row-id="' + realId + '">';
+            htmlCards += '  <div class="cardview-left">';
+            htmlCards += '    <div class="icon-wrapper"><i class="bi bi-car-front-fill"></i></div>';
+            htmlCards += '    <div class="cardview-info">';
+            htmlCards += '      <span class="titulo_cardview">' + Item + '</span>';
+            htmlCards += '      <span class="subtitulo_cardview"><span style="color:var(--accent-green); font-weight:600;">R$ ' + valorAtual + '</span> • ' + (infoAtual || '') + '</span>';
+            htmlCards += '      <span class="texto_adicional_cardview"><i class="bi bi-clock me-1"></i> ' + (horaAtual || '') + '</span>';
+            htmlCards += '    </div>';
+            htmlCards += '  </div>';
+            htmlCards += '</div>';
 
-            document.getElementById("telatodos").innerHTML += card;
             todosvalores.push(valorAtual);
         }
+
+        document.getElementById("telatodos").innerHTML = htmlCards;
+        configurarCliquesCards();
+
         for (var Item_index7 in todosvalores) {
             Item = todosvalores[Item_index7];
             somadesaldo = (txt_to_number(somadesaldo)) + (txt_to_number(Item));
@@ -617,24 +616,30 @@
 
     function pagina1() {
         id = 0;
+        var htmlCards = "";
         for (var Item_index8 in resultado_pesquisa) {
             Item = resultado_pesquisa[Item_index8];
             id = id + 1;
             
-            var card = '<div onclick="calldivisa(' + id + ')" class="cardview" id="' + id + '">';
-            card += '  <div class="cardview-left">';
-            card += '    <div class="icon-wrapper"><i class="bi bi-car-front-fill"></i></div>';
-            card += '    <div class="cardview-info">';
-            card += '      <span class="titulo_cardview">' + (Item['cliente']) + '</span>';
-            card += '      <span class="subtitulo_cardview"><span style="color:var(--accent-green); font-weight:600;">R$ ' + (Item['valor']) + '</span> • <i class="bi bi-calendar3"></i> ' + (Item['informacao'] || '') + '</span>';
-            card += '      <span class="texto_adicional_cardview"><i class="bi bi-clock me-1"></i> Às ' + (Item['hora'] || '') + '</span>';
-            card += '    </div>';
-            card += '  </div>';
-            card += '</div>';
+            var realId = Item['id'];
 
-            document.getElementById("telatodos").innerHTML += card;
+            htmlCards += '<div class="cardview" id-unico="p1_' + id + '" data-row-id="' + realId + '">';
+            htmlCards += '  <div class="cardview-left">';
+            htmlCards += '    <div class="icon-wrapper"><i class="bi bi-car-front-fill"></i></div>';
+            htmlCards += '    <div class="cardview-info">';
+            htmlCards += '      <span class="titulo_cardview">' + (Item['cliente']) + '</span>';
+            htmlCards += '      <span class="subtitulo_cardview"><span style="color:var(--accent-green); font-weight:600;">R$ ' + (Item['valor']) + '</span> • <i class="bi bi-calendar3"></i> ' + (Item['informacao'] || '') + '</span>';
+            htmlCards += '      <span class="texto_adicional_cardview"><i class="bi bi-clock me-1"></i> Às ' + (Item['hora'] || '') + '</span>';
+            htmlCards += '    </div>';
+            htmlCards += '  </div>';
+            htmlCards += '</div>';
+
             todosvalores.push((Item['valor']));
         }
+
+        document.getElementById("telatodos").innerHTML = htmlCards;
+        configurarCliquesCards();
+
         for (var Item_index9 in todosvalores) {
             Item = todosvalores[Item_index9];
             somadesaldo = (txt_to_number(somadesaldo)) + (txt_to_number(Item));
