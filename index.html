@@ -222,18 +222,19 @@
 </head>
 <body>
 
-<!-- TELA DE BLOQUEIO BLINDADA -->
+<!-- TELA DE BLOQUEIO INTEGRADA COM BANCO ONLINE -->
 <div id="tela-bloqueio" style="position: fixed; inset: 0; background: var(--bg-body, #f8fafc); z-index: 2147483647; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; padding: 20px;">
   <div style="width: 100%; max-width: 340px; background: var(--bg-card, #ffffff); border: 1px solid var(--border-color, rgba(0,0,0,0.08)); border-radius: 16px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); text-align: center;">
     <div style="margin-bottom: 12px;">
       <span class="badge bg-warning text-dark px-2 py-1 shadow-sm"><i class="bi bi-taxi-front-fill me-1"></i> Hugo Táxi</span>
     </div>
     <h2 style="margin-bottom: 6px; font-size: 18px; font-weight: 700; color: var(--text-main, #0f172a);">Acesso Restrito</h2>
-    <p style="margin-bottom: 18px; color: var(--text-muted, #64748b); font-size: 13px;">Digite a senha para liberar este dispositivo</p>
+    <p id="subtitulo-bloqueio" style="margin-bottom: 18px; color: var(--text-muted, #64748b); font-size: 13px;">Verificando dispositivo...</p>
     
-    <input type="password" inputmode="numeric" id="input-senha" class="form-control" placeholder="Senha" style="width: 100%; margin-bottom: 12px; text-align: center; font-size: 18px; letter-spacing: 3px;">
-    
-    <button type="button" onclick="verificarSenha()" style="width: 100%; padding: 12px; background: var(--accent-yellow, #d97706); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">Desbloquear</button>
+    <div id="area-form-senha" style="display: none;">
+      <input type="password" inputmode="numeric" id="input-senha" class="form-control" placeholder="Senha" style="width: 100%; margin-bottom: 12px; text-align: center; font-size: 18px; letter-spacing: 3px;">
+      <button type="button" id="btn-desbloquear-online" onclick="verificarSenhaOnline()" style="width: 100%; padding: 12px; background: var(--accent-yellow, #d97706); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">Desbloquear Permanentemente</button>
+    </div>
     
     <p id="msg-erro" style="color: #dc2626; font-size: 13px; font-weight: 500; margin-top: 12px; margin-bottom: 0; display: none;">Senha incorreta. Tente novamente.</p>
   </div>
@@ -241,26 +242,66 @@
 
 <script>
   const HASH_CORRETO = "197496d4514ca9bbfb27b52b5098cf92f78e099d73583851e45f55846b0b3abb";
-  const CHAVE_STORAGE = "hugo_taxi_dispositivo_autorizado";
+  const AUTH_BASEROW_URL = "https://api.baserow.io/";
+  const AUTH_BASEROW_TOKEN = "IKrER8jZ6NQENRIxVlNeF65L5J3ss1LH";
+  const AUTH_TABELA_LOGIN = "177839";
+  const AUTH_CAMPO_NOME = "nome";
 
-  function protegerTela() {
-    if (localStorage.getItem(CHAVE_STORAGE) === HASH_CORRETO) {
-      const el = document.getElementById("tela-bloqueio");
-      if (el) el.remove();
-    } else {
-      const el = document.getElementById("tela-bloqueio");
-      if (!el || el.style.display === "none" || el.style.visibility === "hidden" || el.style.opacity === "0") {
-        location.reload();
+  // Gera uma assinatura única baseada no hardware/navegador + armazenamento local persistente
+  function obterAssinaturaDispositivo() {
+    let idSalvo = localStorage.getItem("hugo_taxi_uuid_unico");
+    if (!idSalvo) {
+      const infoBase = [
+        navigator.userAgent,
+        navigator.language,
+        screen.width + "x" + screen.height,
+        screen.colorDepth,
+        new Date().getTimezoneOffset()
+      ].join("|");
+      let hashSimples = 0;
+      for (let i = 0; i < infoBase.length; i++) {
+        hashSimples = ((hashSimples << 5) - hashSimples) + infoBase.charCodeAt(i);
+        hashSimples |= 0;
       }
+      idSalvo = "dev_" + Math.abs(hashSimples).toString(36) + "_" + Math.random().toString(36).substring(2, 8);
+      localStorage.setItem("hugo_taxi_uuid_unico", idSalvo);
+    }
+    return idSalvo;
+  }
+
+  const meuIDDispositivo = obterAssinaturaDispositivo();
+
+  async function checarAutorizacaoOnline() {
+    try {
+      const resposta = await fetch(AUTH_BASEROW_URL + "api/database/rows/table/" + AUTH_TABELA_LOGIN + "/?user_field_names=true&filter__field_1188492__equal=" + encodeURIComponent(meuIDDispositivo), {
+        method: "GET",
+        headers: { "Authorization": "Token " + AUTH_BASEROW_TOKEN }
+      });
+      const dados = await resposta.json();
+      const autorizado = dados.results && dados.results.some(row => row[AUTH_CAMPO_NOME] === meuIDDispositivo);
+
+      if (autorizado) {
+        const el = document.getElementById("tela-bloqueio");
+        if (el) el.remove();
+      } else {
+        document.getElementById("subtitulo-bloqueio").textContent = "Digite a senha para liberar este dispositivo";
+        document.getElementById("area-form-senha").style.display = "block";
+      }
+    } catch (e) {
+      document.getElementById("subtitulo-bloqueio").textContent = "Digite a senha para liberar este dispositivo";
+      document.getElementById("area-form-senha").style.display = "block";
     }
   }
 
-  if (localStorage.getItem(CHAVE_STORAGE) === HASH_CORRETO) {
+  checarAutorizacaoOnline();
+
+  function protegerTela() {
     const el = document.getElementById("tela-bloqueio");
-    if (el) el.remove();
-  } else {
-    setInterval(protegerTela, 800);
+    if (el && (el.style.display === "none" || el.style.visibility === "hidden" || el.style.opacity === "0")) {
+      location.reload();
+    }
   }
+  setInterval(protegerTela, 800);
 
   async function gerarHash(texto) {
     const encoder = new TextEncoder();
@@ -270,14 +311,31 @@
     return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
   }
 
-  async function verificarSenha() {
+  async function verificarSenhaOnline() {
     const input = document.getElementById("input-senha");
+    const btn = document.getElementById("btn-desbloquear-online");
     const hashDigitado = await gerarHash(input.value);
 
     if (hashDigitado === HASH_CORRETO) {
-      localStorage.setItem(CHAVE_STORAGE, HASH_CORRETO);
-      const el = document.getElementById("tela-bloqueio");
-      if (el) el.remove();
+      btn.disabled = true;
+      btn.textContent = "Autorizando na nuvem...";
+      try {
+        let jsonData = {};
+        jsonData[AUTH_CAMPO_NOME] = meuIDDispositivo;
+
+        await fetch(AUTH_BASEROW_URL + "api/database/rows/table/" + AUTH_TABELA_LOGIN + "/?user_field_names=true", {
+          method: "POST",
+          headers: { "Authorization": "Token " + AUTH_BASEROW_TOKEN, "Content-Type": "application/json" },
+          body: JSON.stringify(jsonData)
+        });
+
+        const el = document.getElementById("tela-bloqueio");
+        if (el) el.remove();
+      } catch (err) {
+        alert("Erro de conexão ao registrar dispositivo. Tente novamente.");
+        btn.disabled = false;
+        btn.textContent = "Desbloquear Permanentemente";
+      }
     } else {
       document.getElementById("msg-erro").style.display = "block";
       input.value = "";
@@ -286,7 +344,7 @@
   }
 
   document.getElementById("input-senha").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") verificarSenha();
+    if (e.key === "Enter") verificarSenhaOnline();
   });
 </script>
 
