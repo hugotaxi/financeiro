@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#f1f5f9" id="meta-theme-color">
+    <script>
+        (function() {
+            var tema = localStorage.getItem('tema_sistema_taxi') || 'light';
+            if (tema === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
     <title>Clientes - Táxi</title>
     
     <!-- Google Fonts: Inter -->
@@ -20,9 +30,25 @@
 
     <style>
         :root {
+            --bg-body: #f1f5f9;
+            --bg-header: rgba(255, 255, 255, 0.9);
+            --bg-card: #ffffff;
+            --bg-card-hover: #f8fafc;
+            --bg-input: #f8fafc;
+            --accent-blue: #2563eb;
+            --accent-green: #059669;
+            --accent-orange: #ea580c;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: rgba(15, 23, 42, 0.08);
+        }
+
+        [data-theme="dark"] {
             --bg-body: #0f172a;
+            --bg-header: rgba(15, 23, 42, 0.85);
             --bg-card: #1e293b;
             --bg-card-hover: #334155;
+            --bg-input: #0f172a;
             --accent-blue: #3b82f6;
             --accent-green: #10b981;
             --accent-orange: #f97316;
@@ -42,7 +68,7 @@
 
         /* Cabeçalho Superior Fixo */
         .app-header {
-            background: rgba(15, 23, 42, 0.85);
+            background: var(--bg-header);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
@@ -199,7 +225,7 @@
 
         /* Inputs do Modal */
         .form-control {
-            background-color: #0f172a !important;
+            background-color: var(--bg-input) !important;
             border: 1px solid var(--border-color) !important;
             color: var(--text-main) !important;
             width: 100% !important;
@@ -497,6 +523,9 @@
         return number;
     }
 
+    if ((localStorage.getItem('tema_sistema_taxi') || 'light') === 'dark') {
+        document.getElementById('meta-theme-color').setAttribute('content', '#0f172a');
+    }
     $(document).ready(function () {
         $("#loading-page-bb").css("opacity", "1");
     });

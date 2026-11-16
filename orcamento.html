@@ -805,6 +805,7 @@
         function aplicarTema(tema) {
             document.body.setAttribute('data-theme', tema);
             localStorage.setItem(STORAGE_KEY_THEME, tema);
+            localStorage.setItem('tema_sistema_taxi', tema);
 
             const metaTheme = document.getElementById('meta-theme-color');
             const icone1 = document.getElementById('icone_tema');
@@ -832,7 +833,7 @@
         // INICIALIZAÇÃO DO GOOGLE MAPS
         // ==========================================
         window.initMap = function () {
-            const temaSalvo = localStorage.getItem(STORAGE_KEY_THEME) || 'light';
+            const temaSalvo = localStorage.getItem('tema_sistema_taxi') || localStorage.getItem(STORAGE_KEY_THEME) || 'light';
             const isDark = temaSalvo === 'dark';
 
             map = new google.maps.Map(document.getElementById('tela_mapa'), {
@@ -1437,7 +1438,7 @@
         // ==========================================
         document.addEventListener('DOMContentLoaded', () => {
             // Aplica tema e tarifas salvas (padrão inicial: claro)
-            aplicarTema(localStorage.getItem(STORAGE_KEY_THEME) || 'light');
+            aplicarTema(localStorage.getItem('tema_sistema_taxi') || localStorage.getItem(STORAGE_KEY_THEME) || 'light');
             carregarTarifas();
             renderizarHistorico();
 

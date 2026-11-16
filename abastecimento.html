@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#f8fafc" id="meta-theme-color">
+    <script>
+        (function() {
+            var tema = localStorage.getItem('tema_sistema_taxi') || 'light';
+            if (tema === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
     <title>Controle de Abastecimento - Táxi</title>
     
     <!-- Google Fonts: Inter -->
@@ -20,14 +30,31 @@
 
     <style>
         :root {
+            --bg-body: #f1f5f9;
+            --bg-header: rgba(255, 255, 255, 0.9);
+            --bg-card: #ffffff;
+            --bg-card-hover: #f8fafc;
+            --bg-badge: rgba(15, 23, 42, 0.06);
+            --accent-blue: #2563eb;
+            --accent-green: #059669;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: rgba(15, 23, 42, 0.08);
+            --card-active-bg: linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%);
+        }
+
+        [data-theme="dark"] {
             --bg-body: #0f172a;
+            --bg-header: rgba(15, 23, 42, 0.85);
             --bg-card: #1e293b;
             --bg-card-hover: #334155;
+            --bg-badge: rgba(255, 255, 255, 0.06);
             --accent-blue: #3b82f6;
             --accent-green: #10b981;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border-color: rgba(255, 255, 255, 0.08);
+            --card-active-bg: linear-gradient(145deg, #1e293b 0%, #172554 100%);
         }
 
         body {
@@ -41,7 +68,7 @@
 
         /* Cabeçalho Superior Fixo */
         .app-header {
-            background: rgba(15, 23, 42, 0.85);
+            background: var(--bg-header);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
@@ -157,7 +184,7 @@
 
         .meus_cards.card-ativo {
             border-color: var(--accent-blue);
-            background: linear-gradient(145deg, #1e293b 0%, #172554 100%);
+            background: var(--card-active-bg);
             box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
         }
 
@@ -206,13 +233,13 @@
         }
 
         .badge-km {
-            background: rgba(255, 255, 255, 0.06);
-            color: #e2e8f0;
+            background: var(--bg-badge);
+            color: var(--text-main);
             font-size: 12px;
             font-weight: 600;
             padding: 4px 10px;
             border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
         }
 
         .tap-hint {
@@ -433,6 +460,9 @@
         return isNaN(txt) ? 0 : txt;
     }
 
+    if ((localStorage.getItem('tema_sistema_taxi') || 'light') === 'dark') {
+        document.getElementById('meta-theme-color').setAttribute('content', '#0f172a');
+    }
     $(document).ready(function () {
         $("#loading-page-bb").css("opacity", "1");
     });

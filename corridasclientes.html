@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#f8fafc" id="meta-theme-color">
+    <script>
+        (function() {
+            var tema = localStorage.getItem('tema_sistema_taxi') || 'light';
+            if (tema === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
     <title>Extrato do Cliente - Táxi</title>
     
     <!-- Google Fonts: Inter -->
@@ -408,12 +418,15 @@
         }
     }
 
-    // Garante início no modo claro
-    aplicarTema('light');
+    // Sincroniza com a escolha feita na index.html
+    aplicarTema(localStorage.getItem('tema_sistema_taxi') || 'light');
 
     btnTema.addEventListener('click', function () {
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        aplicarTema(isDark ? 'light' : 'dark');
+        const novoTema = isDark ? 'light' : 'dark';
+        localStorage.setItem('tema_sistema_taxi', novoTema);
+        localStorage.setItem('taxi_vca_tema_v1', novoTema);
+        aplicarTema(novoTema);
     });
 
     var xretorno, id, tabelaidlogin, somadesaldo, resultado_pesquisa, Item, resposta_obter_linha, resposta_inserir_linha, id200, tabelaidloginnome, todosvalores, tabelaidcorridas, idapagar, tabelaidcorridacliente, usuarionome, tabelaidsaldo, nomescli200, idd, valor200, informacao200, tabelaidcorridavalor, horas200, tabelaidcorridainformacao, idliberar, tabelaidsaldodata, tabelaidgasto, tabelaidgastoinformacao, tabelaidgastodata, tabelaidmensal, tabelaidmensalmes;

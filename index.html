@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f1f5f9">
+    <meta name="theme-color" content="#f1f5f9" id="meta-theme-color">
+    <script>
+        (function() {
+            var tema = localStorage.getItem('tema_sistema_taxi') || 'light';
+            if (tema === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
     <title>Controle - Táxi</title>
     
     <!-- Google Fonts: Inter -->
@@ -32,6 +42,47 @@
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border-color: rgba(0, 0, 0, 0.08);
+            --hero-overlay: linear-gradient(rgba(248, 250, 252, 0.85), rgba(248, 250, 252, 0.95));
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --hero-overlay: linear-gradient(rgba(15, 23, 42, 0.88), rgba(15, 23, 42, 0.96));
+        }
+
+        body {
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted) !important;
+        }
+
+        .btn-tema-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 10px;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            transition: all 0.2s ease;
+        }
+        .btn-tema-toggle:active {
+            transform: scale(0.96);
         }
 
         body {
@@ -48,7 +99,7 @@
 
         /* Topo com Banner e Seletor */
         .hero-section {
-            background: linear-gradient(rgba(248, 250, 252, 0.85), rgba(248, 250, 252, 0.95)), url("assets/victorcima1.jpg") center/cover no-repeat;
+            background: var(--hero-overlay), url("assets/victorcima1.jpg") center/cover no-repeat;
             padding: 16px;
             border-bottom: 1px solid var(--border-color);
         }
@@ -179,6 +230,10 @@
             <div id="space_1" style="cursor: pointer;" title="Ir para Corridas de Clientes">
                 <span class="badge bg-warning text-dark px-2 py-1 shadow-sm"><i class="bi bi-taxi-front-fill me-1"></i> Hugo Táxi</span>
             </div>
+            <button type="button" class="btn-tema-toggle" id="btn-tema-global" title="Alternar Tema Claro / Escuro">
+                <i class="bi bi-moon-stars-fill" id="icone-tema-global"></i>
+                <span id="texto-tema-global">Modo Escuro</span>
+            </button>
         </div>
         <select class="form-select" id="select_1"></select>
     </div>
@@ -757,6 +812,35 @@
             if (virgula) { number = number.replace(".", ","); }
             return number;
         }
+
+        
+        // Controle Global de Tema (Claro / Escuro)
+        function atualizarUITemaIndex(tema) {
+            const icone = document.getElementById('icone-tema-global');
+            const texto = document.getElementById('texto-tema-global');
+            const meta = document.getElementById('meta-theme-color');
+            if (tema === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                if (icone) icone.className = 'bi bi-sun-fill text-warning';
+                if (texto) texto.textContent = 'Modo Claro';
+                if (meta) meta.setAttribute('content', '#0f172a');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                if (icone) icone.className = 'bi bi-moon-stars-fill text-primary';
+                if (texto) texto.textContent = 'Modo Escuro';
+                if (meta) meta.setAttribute('content', '#f1f5f9');
+            }
+        }
+
+        atualizarUITemaIndex(localStorage.getItem('tema_sistema_taxi') || 'light');
+
+        document.getElementById('btn-tema-global').addEventListener('click', function () {
+            const atual = localStorage.getItem('tema_sistema_taxi') || 'light';
+            const proximo = atual === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('tema_sistema_taxi', proximo);
+            localStorage.setItem('taxi_vca_tema_v1', proximo);
+            atualizarUITemaIndex(proximo);
+        });
 
         $(document).ready(function () {
             $("#loading-page-bb").css("opacity", "1");
