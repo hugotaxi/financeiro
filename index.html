@@ -244,8 +244,8 @@
   const HASH_CORRETO = "197496d4514ca9bbfb27b52b5098cf92f78e099d73583851e45f55846b0b3abb";
   const AUTH_BASEROW_URL = "https://api.baserow.io/";
   const AUTH_BASEROW_TOKEN = "IKrER8jZ6NQENRIxVlNeF65L5J3ss1LH";
-  const AUTH_TABELA_LOGIN = "1324424";
-  const AUTH_CAMPO_NOME = "loginpc";
+  const AUTH_TABELA_LOGIN = "177839";
+  const AUTH_CAMPO_NOME = "nome";
 
   // Persistência dupla (localStorage + Cookie de longa duração) com fallback cruzado para Safari/iOS
   function obterAssinaturaDispositivo() {
@@ -289,7 +289,7 @@
 
   async function checarAutorizacaoOnline() {
     try {
-      const resposta = await fetch(AUTH_BASEROW_URL + "api/database/rows/table/" + AUTH_TABELA_LOGIN + "/?user_field_names=true&filter__loginpc__equal=" + encodeURIComponent(meuIDDispositivo), {
+      const resposta = await fetch(AUTH_BASEROW_URL + "api/database/rows/table/" + AUTH_TABELA_LOGIN + "/?user_field_names=true&filter__field_1188492__equal=" + encodeURIComponent(meuIDDispositivo), {
         method: "GET",
         headers: { "Authorization": "Token " + AUTH_BASEROW_TOKEN }
       });
@@ -837,7 +837,7 @@
 
         tabelaidsaldo = '177842';
         tabelaidsaldodata = '1188503';
-        tabelaidlogin = '1324424';
+        tabelaidlogin = '177839';
         tabelaidloginnome = '1188492';
         tabelaidcorridas = '177840';
         tabelaidcorridacliente = '1188495';
