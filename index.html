@@ -222,6 +222,59 @@
 </head>
 <body>
 
+<!-- TELA DE BLOQUEIO -->
+<div id="tela-bloqueio" style="position: fixed; inset: 0; background: var(--bg-body, #f8fafc); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; padding: 20px;">
+  <div style="width: 100%; max-width: 340px; background: var(--bg-card, #ffffff); border: 1px solid var(--border-color, rgba(0,0,0,0.08)); border-radius: 16px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); text-align: center;">
+    <div style="margin-bottom: 12px;">
+      <span class="badge bg-warning text-dark px-2 py-1 shadow-sm"><i class="bi bi-taxi-front-fill me-1"></i> Hugo Táxi</span>
+    </div>
+    <h2 style="margin-bottom: 6px; font-size: 18px; font-weight: 700; color: var(--text-main, #0f172a);">Acesso Restrito</h2>
+    <p style="margin-bottom: 18px; color: var(--text-muted, #64748b); font-size: 13px;">Digite a senha para liberar este dispositivo</p>
+    
+    <input type="password" inputmode="numeric" id="input-senha" class="form-control" placeholder="Senha" style="width: 100%; margin-bottom: 12px; text-align: center; font-size: 18px; letter-spacing: 3px;">
+    
+    <button type="button" onclick="verificarSenha()" style="width: 100%; padding: 12px; background: var(--accent-yellow, #d97706); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">Desbloquear</button>
+    
+    <p id="msg-erro" style="color: #dc2626; font-size: 13px; font-weight: 500; margin-top: 12px; margin-bottom: 0; display: none;">Senha incorreta. Tente novamente.</p>
+  </div>
+</div>
+
+<script>
+  const HASH_CORRETO = "197496d4514ca9bbfb27b52b5098cf92f78e099d73583851e45f55846b0b3abb";
+  const CHAVE_STORAGE = "hugo_taxi_dispositivo_autorizado";
+
+  if (localStorage.getItem(CHAVE_STORAGE) === HASH_CORRETO) {
+    document.getElementById("tela-bloqueio").style.display = "none";
+  }
+
+  async function gerarHash(texto) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(texto);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  async function verificarSenha() {
+    const input = document.getElementById("input-senha");
+    const hashDigitado = await gerarHash(input.value);
+
+    if (hashDigitado === HASH_CORRETO) {
+      localStorage.setItem(CHAVE_STORAGE, HASH_CORRETO);
+      document.getElementById("tela-bloqueio").style.display = "none";
+    } else {
+      document.getElementById("msg-erro").style.display = "block";
+      input.value = "";
+      input.focus();
+    }
+  }
+
+  document.getElementById("input-senha").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") verificarSenha();
+  });
+</script>
+
+
 <div id="loading-page-bb" style="opacity: 0; height: 100%;">
     
     <!-- Topo / Seletor de Telas -->
