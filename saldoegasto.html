@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f172a">
+    <title>Relatório de Saldo e Gastos - Táxi</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- SweetAlert2 -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Cabeçalho Superior Fixo */
+        .app-header {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .btn-voltar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .btn-voltar:active {
+            transform: scale(0.95);
+        }
+
+        /* Container Principal */
+        .main-container {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-bottom: 40px;
+        }
+
+        .section-block {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 4px 0 0 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Estilização Moderna dos Cards */
+        .cardview {
+            background: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 16px !important;
+            padding: 14px 16px !important;
+            width: 100% !important;
+            height: auto !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .cardview:active {
+            transform: scale(0.98);
+        }
+
+        .cardview-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .icon-wrapper-saldo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .icon-wrapper-gasto {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .cardview-info {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .titulo_cardview {
+            color: var(--text-main) !important;
+            font-size: 15px !important;
+            font-weight: 700 !important;
+            margin: 0 !important;
+        }
+
+        .subtitulo_cardview {
+            color: var(--text-muted) !important;
+            font-size: 12px !important;
+            margin: 4px 0 0 0 !important;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Divisória */
+        .custom-separator {
+            border: none;
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 10px 0;
+        }
+
+        #loading-spinner {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Containers de Listas */
+        #telasaldo, #telagasto {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 45vh;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        
+        #telasaldo::-webkit-scrollbar, #telagasto::-webkit-scrollbar {
+            width: 4px;
+        }
+        #telasaldo::-webkit-scrollbar-thumb, #telagasto::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="loading-page-bb" style="opacity: 0; transition: opacity 0.3s ease;">
+    
+    <!-- Cabeçalho -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="d-flex align-items-center gap-2">
+                <a href="index.html" class="btn-voltar" title="Voltar ao início" id="title_1">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="h6 mb-0 fw-bold">Relatório Saldo e Gastos</h1>
+                    <small style="color: var(--text-muted); font-size: 11px;">Toque 3 vezes em um item para excluir</small>
+                </div>
+            </div>
+            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1">
+                <i class="bi bi-wallet2 me-1"></i> Finanças
+            </span>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-container">
+        
+        <!-- Bloco de Saldos -->
+        <div class="section-block">
+            <div class="section-title">
+                <span><i class="bi bi-arrow-down-circle text-success me-1"></i> Entradas / Saldos</span>
+                <i class="bi bi-list-nested"></i>
+            </div>
+            <div id="loading-spinner-saldo">
+                <div class="spinner-border spinner-border-sm text-success me-2" role="status"></div>
+                Carregando saldos...
+            </div>
+            <div id="telasaldo"></div>
+        </div>
+
+        <hr class="custom-separator">
+
+        <!-- Bloco de Gastos -->
+        <div class="section-block">
+            <div class="section-title" id="text_1">
+                <span><i class="bi bi-arrow-up-circle text-danger me-1"></i> Gastos Registrados</span>
+                <i class="bi bi-receipt"></i>
+            </div>
+            <div id="loading-spinner-gasto">
+                <div class="spinner-border spinner-border-sm text-danger me-2" role="status"></div>
+                Carregando gastos...
+            </div>
+            <div id="telagasto"></div>
+        </div>
+
+    </main>
+
+</div>
+
+<!-- Bibliotecas Externas -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-auth.js"></script>
+<script src="https://bootsites.com.br/cdn/bootblocks@1.01/js/bootblocks.js"></script>
+
+<!-- Lógica JavaScript Integrada -->
+<script>
+    var idgasto, ids_card, idquantcorrida, tabelaidlogin, contclickgasto = 0, contclicksaldo = 0, resultadogastos, resultado_linhas, Item, somagastodia, tabelaidloginnome, tabelaidgasto, tabelaidgastodata, idd, tabelaidsaldo, valorss, idnsaldo, id, idngastodia, tabelaidcorridas, somadesaldo, todosgastodia, tabelaidcorridacliente, idss, idareceber, tabelaidcorridavalor, todosgastos, idngasto, locaiss, tabelaidcorridainformacao, somagastos, datass, quantabastecimento, tabelaidsaldodata, horass, vlabastecimento, todosvalores, tabelaidgastoinformacao, idquantdecorridahj, valorareceberhoje, tabelaidmensal, todosareceberhoje, tabelaidmensalmes, todossaldos, todasdiarias, somadiarias, todosareceber, somaareceber;
+
+    // Arrays para mapear o ID correto do Baserow para cada linha exibida
+    var idsGastosReal = [];
+    var idsSaldosReal = [];
+
+    // Deletar Gasto corrigido
+    function callgastoo(indexCard) {
+        contclickgasto++;
+        if (contclickgasto >= 3) {
+            Swal.fire({
+                title: 'Deletando gasto...',
+                icon: 'warning',
+                timer: 1000,
+                showConfirmButton: false
+            });
+            var idBaserowGasto = idsGastosReal[indexCard - 1];
+            fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidgasto + "/" + idBaserowGasto + "/?user_field_names=true", {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Token " + bb_baserow_token
+                }
+            })
+            .then(() => {
+                setTimeout(calldelete, 1000);
+            })
+            .catch((error) => {
+                console.error("Erro ao deletar gasto:", error);
+            });
+        }
+    }
+
+    function calldelete() {
+        window.location.href = "index.html";
+    }
+
+    // Buscar Gastos
+    function callgastos() {
+        function getRowsSearch() {
+            fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidgasto + "/?user_field_names=true&filter__field_" + tabelaidgastodata + "__" + "not_equal" + "=" + '**' + "&order_by=" + "+" + 'data', {
+                method: "GET",
+                headers: {
+                    "Authorization": "Token " + bb_baserow_token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                $("#loading-spinner-gasto").hide();
+                resultadogastos = data.results;
+                idd = 0;
+                var Item_list = (resultadogastos.reverse());
+                
+                for (var Item_index in Item_list) {
+                    Item = Item_list[Item_index];
+                    idd = idd + 1;
+                    
+                    // Armazena o ID real do Baserow correspondente a este card
+                    idsGastosReal.push(Item['id']);
+
+                    var card = '<div onclick="callgastoo(' + idd + ')" class="cardview" id="gasto_' + idd + '">';
+                    card += '  <div class="cardview-left">';
+                    card += '    <div class="icon-wrapper-gasto"><i class="bi bi-cart-dash"></i></div>';
+                    card += '    <div class="cardview-info">';
+                    card += '      <span class="titulo_cardview">' + (Item['informacao']) + '</span>';
+                    card += '      <span class="subtitulo_cardview"><span style="color:var(--accent-red); font-weight:600;">R$ ' + (Item['valor']) + '</span> &bull; <i class="bi bi-calendar3"></i> ' + (Item['data']) + '</span>';
+                    card += '    </div>';
+                    card += '  </div>';
+                    card += '</div>';
+
+                    document.getElementById("telagasto").innerHTML += card;
+                    todosgastos.push((Item['valor']));
+                }
+                
+                for (var Item_index2 in todosgastos) {
+                    Item = todosgastos[Item_index2];
+                    idngasto = idngasto + 1;
+                    somagastos = (txt_to_number(somagastos)) + (txt_to_number(Item));
+                }
+                setlistsomasaldo();
+            })
+            .catch((error) => {
+                $("#loading-spinner-gasto").html('<span class="text-danger">Erro ao carregar gastos.</span>');
+                console.error("Error:", error);
+            });
+        }
+        getRowsSearch();
+    }
+
+    // Buscar Todos os Saldos (Paginação 1, 2, 3)
+    function todosossaldos() {
+        function getRows() {
+            fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidsaldo + "/?user_field_names=true&page=" + '1', {
+                method: "GET",
+                headers: {
+                    "Authorization": "Token " + bb_baserow_token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultado_linhas = data.results;
+                for (var Item_index3 in resultado_linhas) {
+                    Item = resultado_linhas[Item_index3];
+                    idss.push((Item['id']));
+                    locaiss.push((Item['local']));
+                    valorss.push((Item['valor']));
+                    datass.push((Item['data']));
+                    horass.push((Item['hora']));
+                }
+                function getRows2() {
+                    fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidsaldo + "/?user_field_names=true&page=" + '2', {
+                        method: "GET",
+                        headers: {
+                            "Authorization": "Token " + bb_baserow_token
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        resultado_linhas = data.results;
+                        for (var Item_index4 in resultado_linhas) {
+                            Item = resultado_linhas[Item_index4];
+                            idss.push((Item['id']));
+                            locaiss.push((Item['local']));
+                            valorss.push((Item['valor']));
+                            datass.push((Item['data']));
+                            horass.push((Item['hora']));
+                        }
+                        function getRows3() {
+                            fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidsaldo + "/?user_field_names=true&page=" + '3', {
+                                method: "GET",
+                                headers: {
+                                    "Authorization": "Token " + bb_baserow_token
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                resultado_linhas = data.results;
+                                for (var Item_index5 in resultado_linhas) {
+                                    Item = resultado_linhas[Item_index5];
+                                    idss.push((Item['id']));
+                                    locaiss.push((Item['local']));
+                                    valorss.push((Item['valor']));
+                                    datass.push((Item['data']));
+                                    horass.push((Item['hora']));
+                                }
+                                callgastos();
+                            })
+                            .catch((error) => {
+                                callgastos();
+                            });
+                        }
+                        getRows3();
+                    })
+                    .catch((error) => {
+                        callgastos();
+                    });
+                }
+                getRows2();
+            })
+            .catch((error) => {
+                $("#loading-spinner-saldo").html('<span class="text-danger">Erro ao carregar saldos.</span>');
+                callgastos();
+            });
+        }
+        getRows();
+    }
+
+    function calldesigner() {
+        $("#loading-spinner-saldo").hide();
+    }
+
+    function setlistsomasaldo() {
+        for (var Item_index6 in valorss) {
+            Item = valorss[Item_index6];
+            idnsaldo = idnsaldo + 1;
+            somadesaldo = (txt_to_number(somadesaldo)) + (txt_to_number(Item));
+        }
+        id = 0;
+        var Item_list2 = (locaiss.reverse());
+        
+        // Inverte também os IDs correspondentes para manter a ordem visual correta
+        var idssReversed = [...idss].reverse();
+
+        for (var Item_index7 in Item_list2) {
+            Item = Item_list2[Item_index7];
+            id = id + 1;
+            
+            var valorAtual = valorss.slice((-id))[0];
+            var dataAtual = datass.slice((-id))[0];
+            var horaAtual = horass.slice((-id))[0];
+            
+            // Armazena o ID real do saldo na ordem exibida
+            idsSaldosReal.push(idssReversed[id - 1]);
+
+            var card = '<div onclick="callsaldoo(' + id + ')" class="cardview" id="saldo_' + id + '">';
+            card += '  <div class="cardview-left">';
+            card += '    <div class="icon-wrapper-saldo"><i class="bi bi-cash-stack"></i></div>';
+            card += '    <div class="cardview-info">';
+            card += '      <span class="titulo_cardview">' + Item + '</span>';
+            card += '      <span class="subtitulo_cardview"><span style="color:var(--accent-green); font-weight:600;">R$ ' + valorAtual + '</span> &bull; <i class="bi bi-calendar3"></i> ' + (dataAtual || '') + ' às ' + (horaAtual || '') + '</span>';
+            card += '    </div>';
+            card += '  </div>';
+            card += '</div>';
+
+            document.getElementById("telasaldo").innerHTML += card;
+        }
+        calldesigner();
+    }
+
+    // Deletar Saldo corrigido
+    function callsaldoo(ids_card) {
+        contclicksaldo++;
+        if (contclicksaldo >= 3) {
+            Swal.fire({
+                title: 'Deletando saldo...',
+                icon: 'warning',
+                timer: 1000,
+                showConfirmButton: false
+            });
+            var idBaserowSaldo = idsSaldosReal[ids_card - 1];
+            fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidsaldo + "/" + idBaserowSaldo + "/?user_field_names=true", {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Token " + bb_baserow_token
+                }
+            })
+            .then(() => {
+                setTimeout(calldelete, 1000);
+            })
+            .catch((error) => {
+                console.error("Erro ao deletar saldo:", error);
+            });
+        }
+    }
+
+    var bb_baserow_token = 'IKrER8jZ6NQENRIxVlNeF65L5J3ss1LH';
+    var bb_baserow_url = 'https://api.baserow.io/';
+
+    // Inicialização
+    idquantcorrida = 0;
+    somagastodia = 0;
+    idngastodia = 0;
+    todosgastodia = [];
+    idareceber = 0;
+    idnsaldo = 0;
+    idngasto = 0;
+    quantabastecimento = 0;
+    vlabastecimento = 0;
+    todosvalores = [];
+    idquantdecorridahj = 0;
+    valorareceberhoje = 0;
+    todosareceberhoje = [];
+    idss = [];
+    locaiss = [];
+    valorss = [];
+    datass = [];
+    todossaldos = [];
+    somadesaldo = 0;
+    todasdiarias = [];
+    somadiarias = 0;
+    todosgastos = [];
+    somagastos = 0;
+    todosareceber = [];
+    horass = [];
+    somaareceber = 0;
+
+    tabelaidlogin = '177839';
+    tabelaidloginnome = '1188492';
+    tabelaidcorridas = '177840';
+    tabelaidcorridacliente = '1188495';
+    tabelaidcorridavalor = '1188513';
+    tabelaidcorridainformacao = '1188496';
+    tabelaidsaldo = '177842';
+    tabelaidsaldodata = '1188503';
+    tabelaidgasto = '177843';
+    tabelaidgastoinformacao = '1188504';
+    tabelaidgastodata = '1188515';
+    tabelaidmensal = '209979';
+    tabelaidmensalmes = '1448198';
+
+    todosossaldos();
+
+    function qclick() {
+        let elementoClick = document.getElementById('title_1');
+        if (elementoClick) {
+            elementoClick.addEventListener("click", function () {
+                window.location.href = "index.html";
+            });
+        }
+    }
+    qclick();
+
+    function txt_to_number(txt) {
+        txt = txt + "";
+        if (txt.includes(",")) {
+            txt = txt.replace(",", ".");
+        }
+        if (txt.includes(".")) {
+            txt = parseFloat(txt);
+        } else {
+            txt = parseInt(txt);
+        }
+        return isNaN(txt) ? 0 : txt;
+    }
+
+    $(document).ready(function () {
+        $("#loading-page-bb").css("opacity", "1");
+    });
+</script>
+
+</body>
+</html>
