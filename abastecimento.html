@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f172a">
+    <title>Controle de Abastecimento - Táxi</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- SweetAlert2 -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Cabeçalho Superior Fixo */
+        .app-header {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .btn-voltar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .btn-voltar:active {
+            transform: scale(0.95);
+        }
+
+        /* Painel de Resumo (KM e Saldo) */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-value-km {
+            font-size: 14px;
+            font-weight: 600;
+            color: #60a5fa;
+            cursor: pointer;
+        }
+
+        .stat-value-saldo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        /* Lista de Abastecimentos */
+        .lista-container {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 4px 0 2px 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Estilização dos Cards Gerados pelo JS */
+        .meus_cards {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .meus_cards:active {
+            transform: scale(0.98);
+        }
+
+        .meus_cards.card-ativo {
+            border-color: var(--accent-blue);
+            background: linear-gradient(145deg, #1e293b 0%, #172554 100%);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .card-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .icon-wrapper {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .card-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .titulo_meus_cards {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-main);
+        }
+
+        .subtitulo_meus_cards {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .card-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .badge-km {
+            background: rgba(255, 255, 255, 0.06);
+            color: #e2e8f0;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tap-hint {
+            font-size: 10px;
+            color: #60a5fa;
+        }
+
+        /* Loader inicial */
+        #loading-spinner {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="loading-page-bb" style="opacity: 0; transition: opacity 0.3s ease;">
+    
+    <!-- Cabeçalho Moderno -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="d-flex align-items-center gap-2">
+                <a href="index.html" class="btn-voltar" title="Voltar ao início">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="h6 mb-0 fw-bold">Abastecimentos</h1>
+                    <small style="color: var(--text-muted); font-size: 11px;">Toque em um card para ver o saldo</small>
+                </div>
+            </div>
+            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1">
+                <i class="bi bi-fuel-pump-fill me-1"></i> Táxi
+            </span>
+        </div>
+
+        <!-- Cards de Indicadores (Mantendo os IDs originais text_1 e txtsaldo) -->
+        <div class="dashboard-grid">
+            <div class="stat-box">
+                <span class="stat-label"><i class="bi bi-speedometer2 text-primary"></i> Autonomia</span>
+                <span id="text_1" class="stat-value-km">Calculando Km...</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label"><i class="bi bi-cash-coin text-success"></i> Renda no Período</span>
+                <span id="txtsaldo" class="stat-value-saldo">R$ 0,00</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Container da Lista (Mantendo o ID original telaabastecimento) -->
+    <main class="lista-container">
+        <div class="section-title">
+            <span>HISTÓRICO RECENTE</span>
+            <i class="bi bi-clock-history"></i>
+        </div>
+        
+        <div id="loading-spinner">
+            <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+            Carregando abastecimentos...
+        </div>
+
+        <div id="telaabastecimento" style="display: flex; flex-direction: column; gap: 12px; width: 100%;"></div>
+    </main>
+
+</div>
+
+<!-- Bibliotecas Externas -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-auth.js"></script>
+<script src="https://bootsites.com.br/cdn/bootblocks@1.01/js/bootblocks.js"></script>
+
+<!-- Lógica JavaScript Integrada -->
+<script>
+    var respostx, tabelaidgasto, resultado_pesquisa, todosvalores, codigoapesquisar, todoscodigos, id, rendaporabstecimento, Item, vlabastecimento, kmfinal, kminicial;
+
+    function codigoabastecimento() {
+        function getRowsSearch() {
+            fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidgasto + "/?user_field_names=true&filter__field_" + '1188504' + "__" + "equal" + "=" + 'Abastecimento' + "&order_by=" + "+" + 'informacao' + "&page=" + '0', {
+                method: "GET",
+                headers: {
+                    "Authorization": "Token " + bb_baserow_token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                $("#loading-spinner").hide();
+                resultado_pesquisa = data.results;
+                id = 0;
+                var Item_list = (resultado_pesquisa.reverse());
+                
+                for (var Item_index in Item_list) {
+                    Item = Item_list[Item_index];
+                    id = id + 1;
+                    
+                    if (resultado_pesquisa.length > 1) {
+                        kmfinal = ((resultado_pesquisa[1])['km']);
+                        kminicial = ((resultado_pesquisa[0])['km']);
+                    }
+
+                    var card = '<div onclick="callefetuadas(' + id + ')" class="meus_cards" id="card_' + id + '">';
+                    card += '  <div class="card-left">';
+                    card += '    <div class="icon-wrapper">';
+                    card += '      <i class="bi bi-fuel-pump"></i>';
+                    card += '    </div>';
+                    card += '    <div class="card-info">';
+                    card += '      <span class="titulo_meus_cards">R$ ' + String(Item['valor']) + '</span>';
+                    card += '      <span class="subtitulo_meus_cards"><i class="bi bi-calendar3 me-1"></i>' + (Item['data']) + '</span>';
+                    card += '    </div>';
+                    card += '  </div>';
+                    card += '  <div class="card-right">';
+                    card += '    <span class="badge-km"><i class="bi bi-signpost-2 me-1 text-primary"></i>' + String(Item['km']) + ' km</span>';
+                    card += '    <span class="tap-hint">Ver saldo <i class="bi bi-chevron-right"></i></span>';
+                    card += '  </div>';
+                    card += '</div>';
+
+                    document.getElementById("telaabastecimento").innerHTML += card;
+                    
+                    if (resultado_pesquisa.length > 1) {
+                        var kmRodados = kminicial - kmfinal;
+                        $("#text_1").html('Último: <strong>' + kmRodados + ' Km</strong>');
+                    } else {
+                        $("#text_1").html('Aguardando 2º registro');
+                    }
+                }
+            })
+            .catch((error) => {
+                $("#loading-spinner").html('<span class="text-danger">Erro ao carregar dados.</span>');
+                console.error("Error:", error);
+            });
+        }
+        getRowsSearch();
+    }
+
+    function faz_algo() {
+        todosvalores = [];
+        rendaporabstecimento = [];
+        vlabastecimento = 0;
+        
+        $("#txtsaldo").html('<span style="font-size: 13px; color: #94a3b8;">Calculando...</span>');
+
+        function getRowsSearch() {
+            fetch(bb_baserow_url + "api/database/rows/table/" + '177842' + "/?user_field_names=true&filter__field_" + '5090261' + "__" + "equal" + "=" + codigoapesquisar + "&order_by=" + "+" + 'codigo' + "&page=" + '0', {
+                method: "GET",
+                headers: {
+                    "Authorization": "Token " + bb_baserow_token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                rendaporabstecimento = data.results;
+                id = 0;
+                for (var Item_index2 in rendaporabstecimento) {
+                    Item = rendaporabstecimento[Item_index2];
+                    id = id + 1;
+                    todosvalores.push((Item['valor']));
+                }
+                for (var Item_index3 in todosvalores) {
+                    Item = todosvalores[Item_index3];
+                    vlabastecimento = (txt_to_number(vlabastecimento)) + (txt_to_number(Item));
+                }
+                
+                var saldoFormatado = vlabastecimento.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                $("#txtsaldo").html(saldoFormatado);
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            });
+        }
+        getRowsSearch();
+    }
+
+    function callefetuadas(respostx) {
+        $(".meus_cards").removeClass("card-ativo");
+        $("#card_" + respostx).addClass("card-ativo");
+
+        codigoapesquisar = ((resultado_pesquisa[(respostx - 1)])['codigo']);
+        faz_algo();
+    }
+
+    var bb_baserow_token = 'IKrER8jZ6NQENRIxVlNeF65L5J3ss1LH';
+    var bb_baserow_url = 'https://api.baserow.io/';
+
+    // Inicialização
+    tabelaidgasto = '177843';
+    todoscodigos = [];
+    codigoapesquisar = [];
+    rendaporabstecimento = [];
+    todosvalores = [];
+    vlabastecimento = 0;
+    kminicial = 0;
+    kmfinal = 0;
+    codigoabastecimento();
+
+    function qclick() {
+        let elementoClick = document.getElementById('text_1');
+        if (elementoClick) {
+            elementoClick.addEventListener("click", function () {
+                window.location.href = "index.html";
+            });
+        }
+    }
+    qclick();
+
+    function txt_to_number(txt) {
+        txt = txt + "";
+        if (txt.includes(",")) {
+            txt = txt.replace(",", ".");
+        }
+        if (txt.includes(".")) {
+            txt = parseFloat(txt);
+        } else {
+            txt = parseInt(txt);
+        }
+        return isNaN(txt) ? 0 : txt;
+    }
+
+    $(document).ready(function () {
+        $("#loading-page-bb").css("opacity", "1");
+    });
+</script>
+
+</body>
+</html>

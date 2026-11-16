@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#f0f2f5" id="meta-theme-color">
+    <title>Orçamento de Corrida - Táxi Vitória da Conquista</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --bg-body: #090d13;
+            --panel-bg: rgba(18, 24, 33, 0.94);
+            --panel-border: rgba(255, 255, 255, 0.09);
+            --text-main: #e6edf3;
+            --text-sub: #8b949e;
+            --input-bg: #0d1117;
+            --input-border: #30363d;
+            --input-text: #f0f6fc;
+            --box-bg: #161b22;
+            --box-border: #30363d;
+            --inner-box: #0d1117;
+            --inner-border: #21262d;
+            --btn-bg: #21262d;
+            --btn-text: #c9d1d9;
+            --btn-border: #30363d;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --shadow-panel: 0 18px 42px rgba(0, 0, 0, 0.55);
+        }
+
+        [data-theme="light"] {
+            --bg-body: #f0f2f5;
+            --panel-bg: rgba(255, 255, 255, 0.95);
+            --panel-border: rgba(0, 0, 0, 0.08);
+            --text-main: #1f2328;
+            --text-sub: #57606a;
+            --input-bg: #f6f8fa;
+            --input-border: #d0d7de;
+            --input-text: #1f2328;
+            --box-bg: #f6f8fa;
+            --box-border: #d0d7de;
+            --inner-box: #ffffff;
+            --inner-border: #d8dee4;
+            --btn-bg: #f0f2f5;
+            --btn-text: #1f2328;
+            --btn-border: #d0d7de;
+            --accent-blue: #0969da;
+            --accent-green: #1a7f37;
+            --accent-yellow: #9a6700;
+            --accent-red: #cf222e;
+            --shadow-panel: 0 16px 38px rgba(31, 35, 40, 0.16);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-body);
+            transition: background-color 0.3s ease;
+        }
+
+        /* Mapa em Tela Cheia */
+        #tela_mapa {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            background-color: var(--bg-body);
+        }
+
+        /* Estilização do Autocomplete do Google Maps para combinar com o tema */
+        .pac-container {
+            background-color: var(--input-bg) !important;
+            border: 1px solid var(--input-border) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35) !important;
+            margin-top: 4px !important;
+            font-family: 'Inter', sans-serif !important;
+            z-index: 9999 !important;
+        }
+        .pac-item {
+            border-top: 1px solid var(--inner-border) !important;
+            color: var(--text-sub) !important;
+            padding: 8px 12px !important;
+            cursor: pointer !important;
+        }
+        .pac-item:first-child {
+            border-top: none !important;
+        }
+        .pac-item:hover {
+            background-color: var(--box-bg) !important;
+        }
+        .pac-item-query {
+            color: var(--text-main) !important;
+            font-weight: 600 !important;
+        }
+
+        /* Painel Flutuante Estilo Glassmorphism */
+        .floating-panel {
+            position: fixed;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 94%;
+            max-width: 480px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 16px 18px;
+            box-shadow: var(--shadow-panel);
+            z-index: 1000;
+            transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+            max-height: calc(100vh - 28px);
+            overflow-y: auto;
+            color: var(--text-main);
+        }
+
+        /* Custom Scrollbar sutil */
+        .floating-panel::-webkit-scrollbar {
+            width: 5px;
+        }
+        .floating-panel::-webkit-scrollbar-thumb {
+            background: var(--input-border);
+            border-radius: 10px;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .btn-icon-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border: 1px solid var(--btn-border);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .btn-icon-circle:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        /* Campos de Rota */
+        .input-group-route {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .input-group-route .form-control {
+            padding-left: 38px;
+            padding-right: 42px;
+            height: 44px;
+            border-radius: 12px;
+            font-size: 14px;
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border: 1px solid var(--input-border);
+            transition: all 0.2s ease;
+        }
+
+        .input-group-route .form-control::placeholder {
+            color: var(--text-sub);
+        }
+
+        .input-group-route .form-control:focus {
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+            outline: none;
+        }
+
+        .route-dot {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .input-action-btn {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: var(--text-sub);
+            padding: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            border-radius: 8px;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .input-action-btn:hover {
+            color: var(--text-main);
+            background: rgba(128, 128, 128, 0.14);
+        }
+
+        /* Indicador visual sutil de qual campo receberá o clique no mapa */
+        .input-group-route.map-target-active .form-control {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 2px rgba(63, 185, 80, 0.22);
+        }
+
+        .map-hint-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10.5px;
+            color: var(--text-sub);
+            background: var(--box-bg);
+            border: 1px solid var(--box-border);
+            border-radius: 999px;
+            padding: 3px 10px;
+            margin-bottom: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Barra de Resultados */
+        .result-bar {
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+            gap: 8px;
+            background: var(--box-bg);
+            border: 1px solid var(--box-border);
+            border-radius: 14px;
+            padding: 10px;
+            margin-top: 12px;
+        }
+
+        .metric-box {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            border-radius: 10px;
+            background: var(--inner-box);
+            border: 1px solid var(--inner-border);
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .metric-box.clickable {
+            cursor: pointer;
+        }
+
+        .metric-box.clickable:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-1px);
+        }
+
+        .metric-box.clickable:active {
+            transform: scale(0.98);
+        }
+
+        .metric-label {
+            display: block;
+            font-size: 9px;
+            text-transform: uppercase;
+            color: var(--text-sub);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-top: 2px;
+        }
+
+        .metric-value.b1 {
+            color: var(--accent-blue);
+        }
+
+        .metric-value.b2 {
+            color: var(--accent-green);
+        }
+
+        /* Rodapé de Botões */
+        .action-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-soft {
+            border: none;
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-soft:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        .btn-soft:active {
+            transform: translateY(0);
+        }
+
+        /* Botão Flutuante para Maximizar o Painel quando minimizado */
+        .floating-restore-btn {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: var(--panel-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            color: var(--text-main);
+            border: 1px solid var(--panel-border);
+            border-radius: 999px;
+            padding: 12px 20px;
+            font-size: 13.5px;
+            font-weight: 700;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-panel);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .floating-restore-btn:hover {
+            transform: translateX(-50%) translateY(-2px);
+            border-color: var(--accent-blue);
+        }
+
+        /* Grid do Painel Avançado */
+        .avancado-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .avancado-item {
+            background: var(--box-bg);
+            border: 1px solid var(--box-border);
+            border-radius: 12px;
+            padding: 10px 12px;
+        }
+
+        .avancado-item span.lbl {
+            display: block;
+            font-size: 11px;
+            color: var(--text-sub);
+            font-weight: 500;
+        }
+
+        .avancado-item span.val {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-top: 2px;
+        }
+
+        /* Cards de Histórico */
+        .historico-card {
+            background: var(--box-bg);
+            border: 1px solid var(--box-border);
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin-top: 8px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .historico-card:hover {
+            background: var(--inner-border);
+            border-color: var(--accent-green);
+            transform: translateY(-1px);
+        }
+
+        /* Badge de tarifa rápida */
+        .tarifa-info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-top: 8px;
+            padding: 0 4px;
+        }
+
+        .btn-edit-tarifa {
+            background: transparent;
+            border: none;
+            color: var(--accent-blue);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 0;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Inputs do painel avançado */
+        .custom-input-sm {
+            border-radius: 10px !important;
+            height: 38px !important;
+            background-color: var(--input-bg) !important;
+            color: var(--input-text) !important;
+            border: 1px solid var(--input-border) !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+        }
+        .custom-input-sm:focus {
+            border-color: var(--accent-blue) !important;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2) !important;
+        }
+
+        @media (max-width: 400px) {
+            .floating-panel {
+                padding: 14px;
+                top: 10px;
+            }
+            .metric-value {
+                font-size: 12.5px;
+            }
+            .btn-soft {
+                padding: 9px 8px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <!-- Mapa do Google em Tela Cheia -->
+    <div id="tela_mapa"></div>
+
+    <!-- Card Principal de Orçamento -->
+    <div id="card_iniciar" class="floating-panel">
+        <div class="panel-header">
+            <div class="d-flex align-items-center gap-2">
+                <a href="index.html" class="btn-icon-circle text-decoration-none" title="Voltar ao Início" style="background: rgba(63, 185, 80, 0.14); border-color: rgba(63, 185, 80, 0.35); color: var(--accent-green);">
+                    <span class="material-icons" style="font-size: 20px;">local_taxi</span>
+                </a>
+                <div>
+                    <span style="font-weight: 700; font-size: 15px; color: var(--text-main); display: block; letter-spacing: -0.2px;">Orçamento Rápido</span>
+                    <span style="font-size: 11px; color: var(--accent-green); font-weight: 600;">Vitória da Conquista • BA</span>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn-icon-circle" id="btn_centralizar_vca" title="Centralizar em Vitória da Conquista" style="width: 34px; height: 34px;">
+                    <span class="material-icons" style="font-size: 17px;">explore</span>
+                </button>
+                <button class="btn-icon-circle" id="btn_alternar_tema" title="Alternar entre Modo Escuro e Claro" style="width: 34px; height: 34px;">
+                    <span class="material-icons" id="icone_tema" style="font-size: 17px;">dark_mode</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dica de Interação com o Mapa -->
+        <div class="map-hint-pill" id="dica_clique_mapa">
+            <span class="material-icons" style="font-size: 14px; color: var(--accent-green);">touch_app</span>
+            <span id="texto_dica_mapa">Toque no mapa ou digite para definir <strong>Saída</strong> e <strong>Destino</strong></span>
+        </div>
+
+        <!-- Campo Saída (Origem) -->
+        <div class="input-group-route" id="wrap_saida">
+            <span class="material-icons route-dot" style="color: var(--accent-green);">trip_origin</span>
+            <input class="form-control" id="endereco_saida" placeholder="Saída em Vitória da Conquista..." type="text" autocomplete="off">
+            <button class="input-action-btn" id="location" title="Usar minha localização atual">
+                <span class="material-icons" style="font-size: 20px;">my_location</span>
+            </button>
+        </div>
+
+        <!-- Campo Parada Intermediária -->
+        <div class="input-group-route" id="grupo_parada" style="display: none;">
+            <span class="material-icons route-dot" style="color: var(--accent-yellow);">more_vert</span>
+            <input class="form-control" id="endereco_parada" placeholder="Parada intermediária (Opcional)" type="text" autocomplete="off">
+            <button class="input-action-btn" id="btn_remover_parada" title="Remover parada">
+                <span class="material-icons" style="font-size: 19px; color: var(--accent-red);">close</span>
+            </button>
+        </div>
+
+        <!-- Campo Destino (Fim) -->
+        <div class="input-group-route mb-1" id="wrap_destino">
+            <span class="material-icons route-dot" style="color: var(--accent-red);">place</span>
+            <input class="form-control" id="endereco_destino" placeholder="Destino final..." type="text" autocomplete="off">
+            <button class="input-action-btn" id="vai" title="Calcular / Recalcular rota">
+                <span class="material-icons" style="font-size: 20px; color: var(--accent-blue);">done_all</span>
+            </button>
+        </div>
+
+        <!-- Info de Tarifas Vigentes -->
+        <div class="tarifa-info-bar">
+            <span id="resumo_tarifas">Bandeirada R$ 5,00 • B1 R$ 4,31/km • B2 R$ 5,06/km</span>
+            <button class="btn-edit-tarifa" id="btn_config_tarifas">Ajustar tarifas</button>
+        </div>
+
+        <!-- Resultados Instantâneos -->
+        <div class="result-bar" id="telaresult">
+            <div class="metric-box">
+                <span class="metric-label">Distância / Tempo</span>
+                <span class="metric-value" id="distancia">0.0 km</span>
+                <small id="tempo_estimado" style="font-size: 10px; color: var(--text-sub);">-- min</small>
+            </div>
+            <div class="metric-box clickable" id="bandeira1" title="Clique para copiar orçamento Bandeira 1">
+                <span class="metric-label">Bandeira 1</span>
+                <span class="metric-value b1" id="bandeira1_val">R$ 0,00</span>
+                <small style="font-size: 9px; color: var(--accent-blue); font-weight: 600;"><i class="bi bi-clipboard"></i> Copiar</small>
+            </div>
+            <div class="metric-box clickable" id="bandeira2" title="Clique para copiar orçamento Bandeira 2">
+                <span class="metric-label">Bandeira 2</span>
+                <span class="metric-value b2" id="bandeira2_val">R$ 0,00</span>
+                <small style="font-size: 9px; color: var(--accent-green); font-weight: 600;"><i class="bi bi-clipboard"></i> Copiar</small>
+            </div>
+        </div>
+
+        <!-- Barra de Ações Inferiores -->
+        <div class="action-footer">
+            <button class="btn-soft flex-grow-1" id="btn_minimizar" title="Minimizar painel e visualizar apenas o mapa" style="background: var(--btn-bg); color: var(--accent-yellow); border: 1px solid var(--btn-border);">
+                <span class="material-icons" style="font-size: 16px;">expand_less</span>
+                Minimizar
+            </button>
+            <button class="btn-soft flex-grow-1" id="btn_limpar" style="background: var(--btn-bg); color: var(--btn-text); border: 1px solid var(--btn-border);">
+                <span class="material-icons" style="font-size: 16px;">refresh</span>
+                Limpar
+            </button>
+            <button class="btn-soft flex-grow-2" id="btnavancado" style="background: #1f6feb; color: #ffffff;">
+                <span class="material-icons" style="font-size: 16px;">analytics</span>
+                Custos & Histórico
+            </button>
+        </div>
+    </div>
+
+    <!-- Botão Flutuante de Maximizar (exibido apenas quando minimizado) -->
+    <button id="btn_maximizar" class="floating-restore-btn" title="Maximizar painel de orçamento">
+        <span class="material-icons" style="font-size: 19px; color: var(--accent-green);">local_taxi</span>
+        <span>Abrir Orçamento</span>
+        <span class="material-icons" style="font-size: 19px; color: var(--accent-blue);">expand_more</span>
+    </button>
+
+    <!-- Card Avançado (Custos & Histórico) -->
+    <div id="cardavanced" class="floating-panel" style="display: none;">
+        <div class="panel-header">
+            <div class="d-flex align-items-center gap-2">
+                <button id="btn_voltar_mapa" class="btn-icon-circle" title="Voltar ao orçamento simples">
+                    <span class="material-icons" style="font-size: 20px;">arrow_back</span>
+                </button>
+                <div>
+                    <span style="font-weight: 700; font-size: 15px; color: var(--text-main); display: block;">Cálculo de Viagem & Custos</span>
+                    <span style="font-size: 11px; color: var(--accent-green); font-weight: 600;">Análise Financeira & Histórico</span>
+                </div>
+            </div>
+            <button class="btn-icon-circle" id="btn_alternar_tema_adv" title="Alternar Tema" style="width: 34px; height: 34px;">
+                <span class="material-icons" id="icone_tema_adv" style="font-size: 17px;">dark_mode</span>
+            </button>
+        </div>
+
+        <!-- Parâmetros de Consumo e Tarifa -->
+        <div class="row g-2 mb-2">
+            <div class="col-4">
+                <label class="form-label mb-1" style="font-size: 11px; font-weight: 600; color: var(--text-sub);">Consumo (Km/L)</label>
+                <input class="form-control custom-input-sm" id="txconsumo" value="11" type="number" step="0.1" min="1">
+            </div>
+            <div class="col-4">
+                <label class="form-label mb-1" style="font-size: 11px; font-weight: 600; color: var(--text-sub);">Litro (R$)</label>
+                <input class="form-control custom-input-sm" id="txlitro" value="4.95" type="number" step="0.01" min="0.1">
+            </div>
+            <div class="col-4">
+                <label class="form-label mb-1" style="font-size: 11px; font-weight: 600; color: var(--text-sub);">Viagem (R$/km)</label>
+                <input class="form-control custom-input-sm" id="txvalorkm_viagem" value="3.00" type="number" step="0.10" min="0.5">
+            </div>
+        </div>
+
+        <!-- Aviso caso não haja rota calculada -->
+        <div id="aviso_sem_rota" style="display: block; background-color: rgba(210, 153, 34, 0.14); border: 1px solid rgba(210, 153, 34, 0.35); border-radius: 10px; padding: 8px; text-align: center; margin-bottom: 10px;">
+            <span style="color: var(--accent-yellow); font-size: 11.5px; font-weight: 600;">
+                <i class="bi bi-info-circle"></i> Calcule uma rota na tela inicial para ver os custos reais.
+            </span>
+        </div>
+
+        <!-- Grid de Métricas Avançadas -->
+        <div id="telaresutado">
+            <div class="avancado-grid">
+                <div class="avancado-item">
+                    <span class="lbl">Distância (Ida)</span>
+                    <span class="val" id="tx1">0.0 km</span>
+                </div>
+                <div class="avancado-item">
+                    <span class="lbl">Tempo Estimado</span>
+                    <span class="val" id="tx2">--</span>
+                </div>
+                <div class="avancado-item">
+                    <span class="lbl">Valor Viagem (B1)</span>
+                    <span class="val" id="tx3" style="color: var(--accent-blue);">R$ 0,00</span>
+                </div>
+                <div class="avancado-item">
+                    <span class="lbl">KM Total (Ida + Volta)</span>
+                    <span class="val" id="tx5">0.0 km</span>
+                </div>
+                <div class="avancado-item">
+                    <span class="lbl">Combustível Ida/Volta</span>
+                    <span class="val" id="tx7" style="color: var(--accent-red); font-size: 12.5px;">0.00 L / R$ 0,00</span>
+                </div>
+                <div class="avancado-item">
+                    <span class="lbl">Lucro Líquido Est.</span>
+                    <span class="val" id="tx_lucro" style="color: var(--accent-green);">R$ 0,00</span>
+                </div>
+            </div>
+
+            <!-- Botões WhatsApp e Histórico -->
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn-soft flex-grow-1 justify-content-center" id="btn_whatsapp" style="background: #238636; color: #fff; height: 42px;">
+                    <i class="bi bi-whatsapp" style="font-size: 17px;"></i>
+                    Enviar WhatsApp
+                </button>
+                <button class="btn-soft flex-grow-1 justify-content-center" id="btn_toggle_historico" style="background: var(--btn-bg); color: var(--btn-text); height: 42px; border: 1px solid var(--btn-border);">
+                    <span class="material-icons" style="font-size: 18px;">history</span>
+                    Histórico (<span id="contador_historico">0</span>)
+                </button>
+            </div>
+
+            <!-- Painel de Histórico -->
+            <div id="painel_historico" style="display: none; margin-top: 14px; border-top: 1px solid var(--box-border); padding-top: 12px;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <span style="font-size: 12px; font-weight: 700; color: var(--text-main); display: block;">Últimas Corridas Calculadas</span>
+                        <span style="font-size: 10px; color: var(--text-sub);">Clique em uma corrida para recarregar no mapa</span>
+                    </div>
+                    <button class="btn btn-sm" id="btn_limpar_historico" style="font-size: 11px; padding: 3px 9px; color: var(--accent-red); border: 1px solid rgba(248,81,73,0.35); background: transparent; border-radius: 8px;">Limpar</button>
+                </div>
+                <div id="lista_historico" style="max-height: 190px; overflow-y: auto; padding-right: 2px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Lógica Completa da Aplicação -->
+    <script>
+        // ==========================================
+        // CONFIGURAÇÕES E ESTADO GLOBAL DA APLICAÇÃO
+        // ==========================================
+        const VCA_COORDS = { lat: -14.8619, lng: -40.8442 }; // Vitória da Conquista, BA
+        const STORAGE_KEY_HISTORY = 'taxi_vca_historico_v1';
+        const STORAGE_KEY_THEME = 'taxi_vca_tema_v1';
+        const STORAGE_KEY_TARIFAS = 'taxi_vca_tarifas_v1';
+
+        let map;
+        let directionsService;
+        let directionsRenderer;
+        let autocompleteSaida;
+        let autocompleteParada;
+        let autocompleteDestino;
+        let geocoder;
+        let marcadorOrigemTemp = null;
+        let campoAlvoMapa = null; // 'saida' | 'parada' | 'destino' | null
+
+        // Estado atual da corrida calculada
+        let corridaAtual = {
+            origem: '',
+            parada: '',
+            destino: '',
+            distanciaKm: 0,
+            duracaoTexto: '--',
+            duracaoSegundos: 0,
+            valorB1: 0,
+            valorB2: 0
+        };
+
+        // Tarifas padrão (editáveis pelo usuário)
+        let tarifas = {
+            bandeirada: 5.00,
+            kmB1: 4.31,
+            kmB2: 5.06
+        };
+
+        // Estilo Dark Mode personalizado para o Google Maps
+        const darkMapStyle = [
+            { elementType: "geometry", stylers: [{ color: "#131922" }] },
+            { elementType: "labels.text.stroke", stylers: [{ color: "#131922" }] },
+            { elementType: "labels.text.fill", stylers: [{ color: "#748396" }] },
+            { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#cbd5e1" }] },
+            { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#64748b" }] },
+            { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#162421" }] },
+            { featureType: "road", elementType: "geometry", stylers: [{ color: "#212b38" }] },
+            { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#161d26" }] },
+            { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#94a3b8" }] },
+            { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#2c3a4e" }] },
+            { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#1b2431" }] },
+            { featureType: "transit", elementType: "geometry", stylers: [{ color: "#1e293b" }] },
+            { featureType: "water", elementType: "geometry", stylers: [{ color: "#0b1118" }] }
+        ];
+
+        // ==========================================
+        // UTILITÁRIOS VISUAIS (TOAST E FORMATAÇÃO)
+        // ==========================================
+        function showToast(icon, title) {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            Swal.fire({
+                toast: true,
+                position: 'bottom-end',
+                icon: icon,
+                title: title,
+                showConfirmButton: false,
+                timer: 2600,
+                timerProgressBar: true,
+                background: isDark ? '#161b22' : '#ffffff',
+                color: isDark ? '#e6edf3' : '#1f2328'
+            });
+        }
+
+        function formatarMoeda(valor) {
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function arredondarMeioReal(valor) {
+            return Math.round(valor * 2) / 2;
+        }
+
+        function copiarTexto(texto, mensagemSucesso) {
+            // Fallback seguro compatível com iframes e navegadores modernos
+            const textArea = document.createElement("textarea");
+            textArea.value = texto;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast('success', mensagemSucesso);
+            } catch (err) {
+                showToast('error', 'Não foi possível copiar o texto.');
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // ==========================================
+        // GERENCIAMENTO DE TEMA (DARK / LIGHT)
+        // ==========================================
+        function aplicarTema(tema) {
+            document.body.setAttribute('data-theme', tema);
+            localStorage.setItem(STORAGE_KEY_THEME, tema);
+
+            const metaTheme = document.getElementById('meta-theme-color');
+            const icone1 = document.getElementById('icone_tema');
+            const icone2 = document.getElementById('icone_tema_adv');
+
+            if (tema === 'dark') {
+                metaTheme.setAttribute('content', '#0d1117');
+                if (icone1) icone1.textContent = 'light_mode';
+                if (icone2) icone2.textContent = 'light_mode';
+                if (map) map.setOptions({ styles: darkMapStyle });
+            } else {
+                metaTheme.setAttribute('content', '#f0f2f5');
+                if (icone1) icone1.textContent = 'dark_mode';
+                if (icone2) icone2.textContent = 'dark_mode';
+                if (map) map.setOptions({ styles: [] });
+            }
+        }
+
+        function alternarTema() {
+            const atual = document.body.getAttribute('data-theme');
+            aplicarTema(atual === 'dark' ? 'light' : 'dark');
+        }
+
+        // ==========================================
+        // INICIALIZAÇÃO DO GOOGLE MAPS
+        // ==========================================
+        window.initMap = function () {
+            const temaSalvo = localStorage.getItem(STORAGE_KEY_THEME) || 'light';
+            const isDark = temaSalvo === 'dark';
+
+            map = new google.maps.Map(document.getElementById('tela_mapa'), {
+                center: VCA_COORDS,
+                zoom: 14,
+                disableDefaultUI: true,
+                zoomControl: true,
+                clickableIcons: false, // Evita abrir popups nativos de POI ao clicar no mapa
+                gestureHandling: 'greedy', // Permite mover o mapa com apenas 1 dedo no celular sem bloqueio de dois dedos
+                zoomControlOptions: {
+                    position: google.maps.ControlPosition.RIGHT_BOTTOM
+                },
+                styles: isDark ? darkMapStyle : []
+            });
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                map: map,
+                draggable: true,
+                suppressMarkers: false,
+                polylineOptions: {
+                    strokeColor: '#3fb950',
+                    strokeWeight: 5,
+                    strokeOpacity: 0.88
+                }
+            });
+
+            geocoder = new google.maps.Geocoder();
+
+            // Recalcula automaticamente caso o usuário arraste a linha da rota no mapa
+            directionsRenderer.addListener('directions_changed', () => {
+                const directions = directionsRenderer.getDirections();
+                if (directions && directions.routes && directions.routes.length > 0) {
+                    processarResultadoRota(directions, false);
+                }
+            });
+
+            // Evento de clique interativo no mapa
+            map.addListener('click', (event) => {
+                if (event && event.latLng) {
+                    selecionarPontoNoMapa(event.latLng);
+                }
+            });
+
+            // Restrição geográfica focada em Vitória da Conquista / Brasil
+            const boundsVCA = new google.maps.LatLngBounds(
+                new google.maps.LatLng(-14.9500, -40.9400),
+                new google.maps.LatLng(-14.7800, -40.7500)
+            );
+
+            const autocompleteOptions = {
+                bounds: boundsVCA,
+                componentRestrictions: { country: 'br' },
+                fields: ['formatted_address', 'geometry', 'name'],
+                strictBounds: false
+            };
+
+            const inputSaida = document.getElementById('endereco_saida');
+            const inputParada = document.getElementById('endereco_parada');
+            const inputDestino = document.getElementById('endereco_destino');
+
+            autocompleteSaida = new google.maps.places.Autocomplete(inputSaida, autocompleteOptions);
+            autocompleteParada = new google.maps.places.Autocomplete(inputParada, autocompleteOptions);
+            autocompleteDestino = new google.maps.places.Autocomplete(inputDestino, autocompleteOptions);
+
+            // Dispara cálculo automático ao selecionar lugar na lista
+            autocompleteSaida.addListener('place_changed', () => {
+                if (inputDestino.value.trim() !== '') calcularRota();
+            });
+            autocompleteParada.addListener('place_changed', () => {
+                if (inputSaida.value.trim() !== '' && inputDestino.value.trim() !== '') calcularRota();
+            });
+            autocompleteDestino.addListener('place_changed', () => {
+                if (inputSaida.value.trim() !== '') calcularRota();
+            });
+        };
+
+        // ==========================================
+        // SELEÇÃO DE PONTO CLICANDO NO MAPA
+        // ==========================================
+        function definirCampoAlvoMapa(alvo) {
+            campoAlvoMapa = alvo;
+            document.getElementById('wrap_saida').classList.toggle('map-target-active', alvo === 'saida');
+            document.getElementById('grupo_parada').classList.toggle('map-target-active', alvo === 'parada');
+            document.getElementById('wrap_destino').classList.toggle('map-target-active', alvo === 'destino');
+
+            const textoDica = document.getElementById('texto_dica_mapa');
+            if (alvo === 'saida') {
+                textoDica.innerHTML = 'Próximo clique no mapa definirá a <strong>Saída (Origem)</strong>';
+            } else if (alvo === 'parada') {
+                textoDica.innerHTML = 'Próximo clique no mapa definirá a <strong>Parada Intermediária</strong>';
+            } else if (alvo === 'destino') {
+                textoDica.innerHTML = 'Próximo clique no mapa definirá o <strong>Destino Final</strong>';
+            } else {
+                atualizarDicaContextualMapa();
+            }
+        }
+
+        function atualizarDicaContextualMapa() {
+            if (campoAlvoMapa) return;
+            const textoDica = document.getElementById('texto_dica_mapa');
+            const temSaida = document.getElementById('endereco_saida').value.trim() !== '';
+            const temDestino = document.getElementById('endereco_destino').value.trim() !== '';
+
+            if (!temSaida) {
+                textoDica.innerHTML = 'Toque no mapa ou digite para definir a <strong>Saída (Origem)</strong>';
+            } else if (!temDestino) {
+                textoDica.innerHTML = 'Agora toque no mapa para definir o <strong>Destino Final</strong>';
+            } else {
+                textoDica.innerHTML = 'Toque em outro local do mapa para adicionar/alterar uma <strong>Parada</strong>';
+            }
+        }
+
+        function colocarMarcadorOrigemTemporario(latLng) {
+            removerMarcadorOrigemTemporario();
+            if (!map) return;
+
+            marcadorOrigemTemp = new google.maps.Marker({
+                position: latLng,
+                map: map,
+                title: 'Ponto de Saída',
+                animation: google.maps.Animation.DROP,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 9,
+                    fillColor: '#3fb950',
+                    fillOpacity: 1,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2.5
+                }
+            });
+        }
+
+        function removerMarcadorOrigemTemporario() {
+            if (marcadorOrigemTemp) {
+                marcadorOrigemTemp.setMap(null);
+                marcadorOrigemTemp = null;
+            }
+        }
+
+        function selecionarPontoNoMapa(latLng) {
+            if (!geocoder) return;
+
+            const inputSaida = document.getElementById('endereco_saida');
+            const inputParada = document.getElementById('endereco_parada');
+            const inputDestino = document.getElementById('endereco_destino');
+            const grupoParada = document.getElementById('grupo_parada');
+
+            // Determina qual campo deve ser preenchido respeitando foco explícito ou o fluxo automático:
+            // 1º clique (origem vazia) -> Saída
+            // 2º clique (origem preenchida, destino vazio) -> Destino
+            // 3º+ clique (saída e destino já preenchidos) -> Parada intermediária automática
+            let destinoCampo = campoAlvoMapa;
+            if (!destinoCampo) {
+                if (inputSaida.value.trim() === '') {
+                    destinoCampo = 'saida';
+                } else if (inputDestino.value.trim() === '') {
+                    destinoCampo = 'destino';
+                } else {
+                    destinoCampo = 'parada';
+                }
+            }
+
+            geocoder.geocode({ location: latLng }, (results, status) => {
+                const enderecoFormatado = (status === 'OK' && results && results[0])
+                    ? results[0].formatted_address
+                    : `${latLng.lat().toFixed(5)}, ${latLng.lng().toFixed(5)}`;
+
+                if (destinoCampo === 'saida') {
+                    inputSaida.value = enderecoFormatado;
+                    if (inputDestino.value.trim() === '') {
+                        colocarMarcadorOrigemTemporario(latLng);
+                        showToast('success', 'Saída selecionada no mapa');
+                    } else {
+                        showToast('success', 'Saída atualizada e rota recalculada!');
+                    }
+                } else if (destinoCampo === 'destino') {
+                    inputDestino.value = enderecoFormatado;
+                    showToast('success', 'Destino selecionado e rota calculada');
+                } else if (destinoCampo === 'parada') {
+                    const jaTinhaParada = grupoParada.style.display !== 'none' && inputParada.value.trim() !== '';
+                    grupoParada.style.display = 'block';
+                    inputParada.value = enderecoFormatado;
+                    showToast('info', jaTinhaParada
+                        ? 'Parada atualizada e rota recalculada!'
+                        : 'Parada adicionada e rota recalculada!');
+                }
+
+                // Limpa o foco explícito após preencher para retomar o fluxo automático
+                definirCampoAlvoMapa(null);
+                atualizarDicaContextualMapa();
+
+                // Se Origem e Destino já estiverem preenchidos, traça/recalcula a rota imediatamente
+                if (inputSaida.value.trim() !== '' && inputDestino.value.trim() !== '') {
+                    calcularRota(true);
+                }
+            });
+        }
+
+        // ==========================================
+        // GEOLOCALIZAÇÃO ATUAL (GPS)
+        // ==========================================
+        function usarLocalizacaoAtual() {
+            if (!navigator.geolocation) {
+                showToast('error', 'Geolocalização não suportada neste navegador.');
+                return;
+            }
+
+            showToast('info', 'Buscando sua localização...');
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    if (map) {
+                        map.setCenter(pos);
+                        map.setZoom(16);
+                    }
+
+                    if (geocoder) {
+                        geocoder.geocode({ location: pos }, (results, status) => {
+                            if (status === 'OK' && results[0]) {
+                                document.getElementById('endereco_saida').value = results[0].formatted_address;
+                                showToast('success', 'Localização atual definida como saída!');
+                                atualizarDicaContextualMapa();
+                                if (document.getElementById('endereco_destino').value.trim() !== '') {
+                                    calcularRota();
+                                } else {
+                                    colocarMarcadorOrigemTemporario(pos);
+                                }
+                            } else {
+                                document.getElementById('endereco_saida').value = `${pos.lat.toFixed(6)}, ${pos.lng.toFixed(6)}`;
+                                atualizarDicaContextualMapa();
+                            }
+                        });
+                    }
+                },
+                () => {
+                    showToast('error', 'Permissão de localização negada ou indisponível.');
+                },
+                { enableHighAccuracy: true, timeout: 8000 }
+            );
+        }
+
+        // ==========================================
+        // CÁLCULO DE ROTA E ORÇAMENTO
+        // ==========================================
+        function calcularRota(salvarNoHistorico = true) {
+            const origem = document.getElementById('endereco_saida').value.trim();
+            const destino = document.getElementById('endereco_destino').value.trim();
+            const grupoParada = document.getElementById('grupo_parada');
+            const parada = grupoParada.style.display !== 'none'
+                ? document.getElementById('endereco_parada').value.trim()
+                : '';
+
+            if (!origem || !destino) {
+                showToast('warning', 'Preencha os campos de Saída e Destino.');
+                return;
+            }
+
+            if (!directionsService) {
+                showToast('error', 'Aguarde o carregamento do Google Maps.');
+                return;
+            }
+
+            const waypoints = [];
+            if (parada) {
+                waypoints.push({
+                    location: parada,
+                    stopover: true
+                });
+            }
+
+            const request = {
+                origin: origem,
+                destination: destino,
+                waypoints: waypoints,
+                travelMode: google.maps.TravelMode.DRIVING,
+                unitSystem: google.maps.UnitSystem.METRIC
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status === 'OK') {
+                    removerMarcadorOrigemTemporario();
+                    directionsRenderer.setDirections(result);
+                    processarResultadoRota(result, salvarNoHistorico);
+                    atualizarDicaContextualMapa();
+                } else {
+                    showToast('error', 'Não foi possível traçar a rota entre esses endereços.');
+                }
+            });
+        }
+
+        function processarResultadoRota(directionsResult, salvarNoHistorico) {
+            const route = directionsResult.routes[0];
+            if (!route || !route.legs) return;
+
+            let totalDistanciaMetros = 0;
+            let totalDuracaoSegundos = 0;
+
+            route.legs.forEach((leg) => {
+                totalDistanciaMetros += leg.distance.value;
+                totalDuracaoSegundos += leg.duration.value;
+            });
+
+            const distanciaKm = totalDistanciaMetros / 1000;
+            const minutosTotais = Math.max(1, Math.round(totalDuracaoSegundos / 60));
+
+            let duracaoFormatada = `${minutosTotais} min`;
+            if (minutosTotais >= 60) {
+                const horas = Math.floor(minutosTotais / 60);
+                const mins = minutosTotais % 60;
+                duracaoFormatada = `${horas}h ${mins}m`;
+            }
+
+            // Cálculo das Bandeiras (Bandeirada + Km rodado) com arredondamento para R$ 0,50 ou R$ 0,00
+            const valorB1 = arredondarMeioReal(tarifas.bandeirada + (distanciaKm * tarifas.kmB1));
+            const valorB2 = arredondarMeioReal(tarifas.bandeirada + (distanciaKm * tarifas.kmB2));
+
+            // Atualiza estado global
+            corridaAtual = {
+                origem: route.legs[0].start_address || document.getElementById('endereco_saida').value.trim(),
+                parada: route.legs.length > 1 ? document.getElementById('endereco_parada').value.trim() : '',
+                destino: route.legs[route.legs.length - 1].end_address || document.getElementById('endereco_destino').value.trim(),
+                distanciaKm: distanciaKm,
+                duracaoTexto: duracaoFormatada,
+                duracaoSegundos: totalDuracaoSegundos,
+                valorB1: valorB1,
+                valorB2: valorB2
+            };
+
+            // Atualiza UI Principal
+            document.getElementById('distancia').textContent = `${distanciaKm.toFixed(1)} km`;
+            document.getElementById('tempo_estimado').textContent = duracaoFormatada;
+            document.getElementById('bandeira1_val').textContent = formatarMoeda(valorB1);
+            document.getElementById('bandeira2_val').textContent = formatarMoeda(valorB2);
+
+            // Atualiza UI Avançada (Custos & Lucro)
+            atualizarCalculosAvancados();
+
+            if (salvarNoHistorico && distanciaKm > 0) {
+                adicionarAoHistorico(corridaAtual);
+            }
+        }
+
+        // ==========================================
+        // CÁLCULOS FINANCEIROS AVANÇADOS (IDA/VOLTA)
+        // ==========================================
+        function atualizarCalculosAvancados() {
+            const aviso = document.getElementById('aviso_sem_rota');
+            const consumoKmL = parseFloat(document.getElementById('txconsumo').value) || 11;
+            const precoLitro = parseFloat(document.getElementById('txlitro').value) || 4.95;
+            const valorKmViagem = parseFloat(document.getElementById('txvalorkm_viagem').value) || 3.00;
+
+            if (corridaAtual.distanciaKm <= 0) {
+                aviso.style.display = 'block';
+                document.getElementById('tx1').textContent = '0.0 km';
+                document.getElementById('tx2').textContent = '--';
+                document.getElementById('tx3').textContent = 'R$ 0,00';
+                document.getElementById('tx5').textContent = '0.0 km';
+                document.getElementById('tx7').textContent = '0.00 L / R$ 0,00';
+                document.getElementById('tx_lucro').textContent = 'R$ 0,00';
+                return;
+            }
+
+            aviso.style.display = 'none';
+
+            const distIda = corridaAtual.distanciaKm;
+            const distTotalIdaVolta = distIda * 2;
+            const valorCobradoViagem = arredondarMeioReal(tarifas.bandeirada + (distIda * valorKmViagem));
+            const litrosGastos = distTotalIdaVolta / consumoKmL;
+            const custoCombustivel = litrosGastos * precoLitro;
+            const lucroLiquido = valorCobradoViagem - custoCombustivel;
+
+            document.getElementById('tx1').textContent = `${distIda.toFixed(1)} km`;
+            document.getElementById('tx2').textContent = corridaAtual.duracaoTexto;
+            document.getElementById('tx3').textContent = formatarMoeda(valorCobradoViagem);
+            document.getElementById('tx5').textContent = `${distTotalIdaVolta.toFixed(1)} km`;
+            document.getElementById('tx7').textContent = `${litrosGastos.toFixed(2)} L / ${formatarMoeda(custoCombustivel)}`;
+
+            const elLucro = document.getElementById('tx_lucro');
+            elLucro.textContent = formatarMoeda(lucroLiquido);
+            elLucro.style.color = lucroLiquido >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+        }
+
+        // ==========================================
+        // CONFIGURAÇÃO DE TARIFAS (BANDEIRADA / KM)
+        // ==========================================
+        function carregarTarifas() {
+            const salvas = localStorage.getItem(STORAGE_KEY_TARIFAS);
+            if (salvas) {
+                try {
+                    tarifas = JSON.parse(salvas);
+                } catch (e) {}
+            }
+            atualizarResumoTarifas();
+        }
+
+        function atualizarResumoTarifas() {
+            document.getElementById('resumo_tarifas').textContent =
+                `Bandeirada ${formatarMoeda(tarifas.bandeirada)} • B1 ${formatarMoeda(tarifas.kmB1)}/km • B2 ${formatarMoeda(tarifas.kmB2)}/km`;
+        }
+
+        function abrirModalTarifas() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            Swal.fire({
+                title: 'Configurar Tarifas',
+                background: isDark ? '#161b22' : '#ffffff',
+                color: isDark ? '#e6edf3' : '#1f2328',
+                html: `
+                    <div class="text-start" style="font-size: 13px;">
+                        <label class="form-label mb-1">Bandeirada Inicial (R$)</label>
+                        <input id="swal_bandeirada" type="number" step="0.10" class="form-control mb-2" value="${tarifas.bandeirada.toFixed(2)}">
+                        <label class="form-label mb-1">Valor por KM - Bandeira 1 (R$)</label>
+                        <input id="swal_b1" type="number" step="0.10" class="form-control mb-2" value="${tarifas.kmB1.toFixed(2)}">
+                        <label class="form-label mb-1">Valor por KM - Bandeira 2 (R$)</label>
+                        <input id="swal_b2" type="number" step="0.10" class="form-control" value="${tarifas.kmB2.toFixed(2)}">
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Salvar Tarifas',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#238636',
+                preConfirm: () => {
+                    const b = parseFloat(document.getElementById('swal_bandeirada').value);
+                    const k1 = parseFloat(document.getElementById('swal_b1').value);
+                    const k2 = parseFloat(document.getElementById('swal_b2').value);
+                    if (isNaN(b) || isNaN(k1) || isNaN(k2) || b < 0 || k1 <= 0 || k2 <= 0) {
+                        Swal.showValidationMessage('Informe valores numéricos válidos.');
+                        return false;
+                    }
+                    return { bandeirada: b, kmB1: k1, kmB2: k2 };
+                }
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    tarifas = result.value;
+                    localStorage.setItem(STORAGE_KEY_TARIFAS, JSON.stringify(tarifas));
+                    atualizarResumoTarifas();
+                    showToast('success', 'Tarifas atualizadas!');
+                    if (corridaAtual.distanciaKm > 0) {
+                        calcularRota(false);
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // HISTÓRICO DE CORRIDAS (LOCALSTORAGE)
+        // ==========================================
+        function obterHistorico() {
+            try {
+                return JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function adicionarAoHistorico(corrida) {
+            const lista = obterHistorico();
+            const novoItem = {
+                id: Date.now(),
+                data: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+                origem: corrida.origem,
+                parada: corrida.parada,
+                destino: corrida.destino,
+                distanciaKm: corrida.distanciaKm,
+                valorB1: corrida.valorB1,
+                valorB2: corrida.valorB2
+            };
+
+            // Evita duplicar exatamente a mesma corrida em sequência
+            if (lista.length > 0 && lista[0].origem === novoItem.origem && lista[0].destino === novoItem.destino && lista[0].parada === novoItem.parada) {
+                lista[0] = novoItem;
+            } else {
+                lista.unshift(novoItem);
+            }
+
+            // Mantém até 15 registros recentes
+            const limitada = lista.slice(0, 15);
+            localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(limitada));
+            renderizarHistorico();
+        }
+
+        function renderizarHistorico() {
+            const lista = obterHistorico();
+            const container = document.getElementById('lista_historico');
+            document.getElementById('contador_historico').textContent = lista.length;
+
+            if (lista.length === 0) {
+                container.innerHTML = `<div class="text-center py-3" style="font-size: 12px; color: var(--text-sub);">Nenhuma corrida salva no histórico ainda.</div>`;
+                return;
+            }
+
+            container.innerHTML = lista.map((item) => {
+                const origemCurta = item.origem.split(',')[0];
+                const destinoCurto = item.destino.split(',')[0];
+                return `
+                    <div class="historico-card" onclick="recarregarCorridaHistorico(${item.id})">
+                        <div style="overflow: hidden;">
+                            <div style="font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                ${origemCurta} &rarr; ${destinoCurto}
+                            </div>
+                            <div style="font-size: 10.5px; color: var(--text-sub);">
+                                ${item.data} • ${item.distanciaKm.toFixed(1)} km ${item.parada ? '• Com parada' : ''}
+                            </div>
+                        </div>
+                        <div class="text-end flex-shrink-0">
+                            <span style="display: block; font-weight: 700; color: var(--accent-blue);">${formatarMoeda(item.valorB1)}</span>
+                            <span style="display: block; font-size: 10px; color: var(--accent-green);">B2: ${formatarMoeda(item.valorB2)}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.recarregarCorridaHistorico = function (id) {
+            const item = obterHistorico().find((x) => x.id === id);
+            if (!item) return;
+
+            document.getElementById('endereco_saida').value = item.origem;
+            document.getElementById('endereco_destino').value = item.destino;
+
+            const grupoParada = document.getElementById('grupo_parada');
+            const inputParada = document.getElementById('endereco_parada');
+            if (item.parada) {
+                grupoParada.style.display = 'block';
+                inputParada.value = item.parada;
+            } else {
+                grupoParada.style.display = 'none';
+                inputParada.value = '';
+            }
+
+            // Volta ao painel principal e traça a rota
+            document.getElementById('cardavanced').style.display = 'none';
+            document.getElementById('card_iniciar').style.display = 'block';
+            calcularRota(false);
+        };
+
+        // ==========================================
+        // COMPARTILHAMENTO VIA WHATSAPP & LIMPEZA
+        // ==========================================
+        function enviarOrcamentoWhatsApp() {
+            if (corridaAtual.distanciaKm <= 0) {
+                showToast('warning', 'Calcule uma corrida antes de enviar.');
+                return;
+            }
+
+            const valorKmViagem = parseFloat(document.getElementById('txvalorkm_viagem').value) || 3.00;
+            const valorViagem = arredondarMeioReal(tarifas.bandeirada + (corridaAtual.distanciaKm * valorKmViagem));
+            const valorFormatado = valorViagem.toFixed(2).replace('.', ',');
+            const destinoFormatado = corridaAtual.destino.split(',')[0] || corridaAtual.destino;
+
+            const texto = `Oi! Aqui é o Hugo, taxista há 7 anos na região. O orçamento para ${destinoFormatado} fica em R$ ${valorFormatado} (Pix, cartão ou dinheiro). Viajo com veículo revisado, ar-condicionado e total segurança de porta a porta.`;
+
+            const url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+            window.open(url, '_blank');
+        }
+
+        function limparFormulario() {
+            document.getElementById('endereco_saida').value = '';
+            document.getElementById('endereco_parada').value = '';
+            document.getElementById('endereco_destino').value = '';
+            document.getElementById('grupo_parada').style.display = 'none';
+
+            document.getElementById('distancia').textContent = '0.0 km';
+            document.getElementById('tempo_estimado').textContent = '-- min';
+            document.getElementById('bandeira1_val').textContent = 'R$ 0,00';
+            document.getElementById('bandeira2_val').textContent = 'R$ 0,00';
+
+            corridaAtual = {
+                origem: '',
+                parada: '',
+                destino: '',
+                distanciaKm: 0,
+                duracaoTexto: '--',
+                duracaoSegundos: 0,
+                valorB1: 0,
+                valorB2: 0
+            };
+
+            removerMarcadorOrigemTemporario();
+            definirCampoAlvoMapa(null);
+            atualizarDicaContextualMapa();
+
+            if (directionsRenderer) {
+                directionsRenderer.setDirections({ routes: [] });
+            }
+            if (map) {
+                map.setCenter(VCA_COORDS);
+                map.setZoom(14);
+            }
+
+            atualizarCalculosAvancados();
+            showToast('info', 'Campos e mapa limpos.');
+        }
+
+        // ==========================================
+        // EVENT LISTENERS DA INTERFACE
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Aplica tema e tarifas salvas (padrão inicial: claro)
+            aplicarTema(localStorage.getItem(STORAGE_KEY_THEME) || 'light');
+            carregarTarifas();
+            renderizarHistorico();
+
+            // Alternar tema (ambos botões)
+            document.getElementById('btn_alternar_tema').addEventListener('click', alternarTema);
+            document.getElementById('btn_alternar_tema_adv').addEventListener('click', alternarTema);
+
+            // Centralizar mapa em Vitória da Conquista
+            document.getElementById('btn_centralizar_vca').addEventListener('click', () => {
+                if (map) {
+                    map.panTo(VCA_COORDS);
+                    map.setZoom(14);
+                }
+            });
+
+            // Foco nos campos define qual input receberá o próximo clique no mapa
+            document.getElementById('endereco_saida').addEventListener('focus', () => definirCampoAlvoMapa('saida'));
+            document.getElementById('endereco_parada').addEventListener('focus', () => definirCampoAlvoMapa('parada'));
+            document.getElementById('endereco_destino').addEventListener('focus', () => definirCampoAlvoMapa('destino'));
+
+            // Atualiza a dica contextual se o usuário digitar manualmente ou sair dos campos
+            ['endereco_saida', 'endereco_parada', 'endereco_destino'].forEach((id) => {
+                document.getElementById(id).addEventListener('blur', () => {
+                    setTimeout(() => {
+                        if (!['endereco_saida', 'endereco_parada', 'endereco_destino'].includes(document.activeElement.id)) {
+                            definirCampoAlvoMapa(null);
+                        }
+                    }, 200);
+                });
+            });
+
+            // Botão GPS (Localização Atual)
+            document.getElementById('location').addEventListener('click', usarLocalizacaoAtual);
+
+            // Botão Calcular Rota
+            document.getElementById('vai').addEventListener('click', () => calcularRota(true));
+
+            // Enter nos inputs dispara cálculo
+            ['endereco_saida', 'endereco_parada', 'endereco_destino'].forEach((id) => {
+                document.getElementById(id).addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        calcularRota(true);
+                    }
+                });
+            });
+
+            // Minimizar e Maximizar Painel de Orçamento
+            document.getElementById('btn_minimizar').addEventListener('click', () => {
+                document.getElementById('card_iniciar').style.display = 'none';
+                document.getElementById('btn_maximizar').style.display = 'inline-flex';
+            });
+
+            document.getElementById('btn_maximizar').addEventListener('click', () => {
+                document.getElementById('btn_maximizar').style.display = 'none';
+                document.getElementById('card_iniciar').style.display = 'block';
+            });
+
+            document.getElementById('btn_remover_parada').addEventListener('click', () => {
+                document.getElementById('endereco_parada').value = '';
+                document.getElementById('grupo_parada').style.display = 'none';
+                definirCampoAlvoMapa(null);
+                atualizarDicaContextualMapa();
+                if (document.getElementById('endereco_saida').value && document.getElementById('endereco_destino').value) {
+                    calcularRota(false);
+                }
+            });
+
+            // Copiar Bandeira 1 e Bandeira 2 ao clicar
+            document.getElementById('bandeira1').addEventListener('click', () => {
+                if (corridaAtual.valorB1 <= 0) return;
+                const kmFormatado = corridaAtual.distanciaKm.toFixed(1).replace('.', ',');
+                const msg = `Olá! Tudo bem? Segue o orçamento para a sua corrida:\n\n🚕 Serviço: Táxi (Bandeira 1)\n📍 Distância estimada: ${kmFormatado} km\n💰 Valor aproximado: ${formatarMoeda(corridaAtual.valorB1)}\n\nPodemos confirmar o agendamento ou o envio do veículo? Qualquer dúvida, estou à disposição!`;
+                copiarTexto(msg, 'Orçamento Bandeira 1 copiado!');
+            });
+
+            document.getElementById('bandeira2').addEventListener('click', () => {
+                if (corridaAtual.valorB2 <= 0) return;
+                const kmFormatado = corridaAtual.distanciaKm.toFixed(1).replace('.', ',');
+                const msg = `Olá! Tudo bem? Segue o orçamento para a sua corrida:\n\n🚕 Serviço: Táxi (Bandeira 2)\n📍 Distância estimada: ${kmFormatado} km\n💰 Valor aproximado: ${formatarMoeda(corridaAtual.valorB2)}\n\nPodemos confirmar o agendamento ou o envio do veículo? Qualquer dúvida, estou à disposição!`;
+                copiarTexto(msg, 'Orçamento Bandeira 2 copiado!');
+            });
+
+            // Limpar tudo
+            document.getElementById('btn_limpar').addEventListener('click', limparFormulario);
+
+            // Configurar tarifas
+            document.getElementById('btn_config_tarifas').addEventListener('click', abrirModalTarifas);
+
+            // Alternar entre Painel Principal e Painel Avançado
+            document.getElementById('btnavancado').addEventListener('click', () => {
+                atualizarCalculosAvancados();
+                document.getElementById('card_iniciar').style.display = 'none';
+                document.getElementById('cardavanced').style.display = 'block';
+            });
+
+            document.getElementById('btn_voltar_mapa').addEventListener('click', () => {
+                document.getElementById('cardavanced').style.display = 'none';
+                document.getElementById('card_iniciar').style.display = 'block';
+            });
+
+            // Recalcular custos em tempo real ao alterar consumo/litro/km
+            ['txconsumo', 'txlitro', 'txvalorkm_viagem'].forEach((id) => {
+                document.getElementById(id).addEventListener('input', atualizarCalculosAvancados);
+            });
+
+            // WhatsApp
+            document.getElementById('btn_whatsapp').addEventListener('click', enviarOrcamentoWhatsApp);
+
+            // Histórico Toggle e Limpeza
+            document.getElementById('btn_toggle_historico').addEventListener('click', () => {
+                const painel = document.getElementById('painel_historico');
+                painel.style.display = painel.style.display === 'none' ? 'block' : 'none';
+            });
+
+            document.getElementById('btn_limpar_historico').addEventListener('click', () => {
+                localStorage.removeItem(STORAGE_KEY_HISTORY);
+                renderizarHistorico();
+                showToast('info', 'Histórico limpo.');
+            });
+        });
+    </script>
+
+    <!-- API do Google Maps com chave configurada -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDU0q-M-K3AC20rnWpvGe6JvtRaiBdek7I&libraries=places&callback=initMap" async defer></script>
+</body>
+</html>

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f172a">
+    <title>Manutenção - Táxi</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- SweetAlert2 -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Cabeçalho Superior Fixo */
+        .app-header {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .btn-voltar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .btn-voltar:active {
+            transform: scale(0.95);
+        }
+
+        /* Container da Lista */
+        .lista-container {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-bottom: 90px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 4px 0 2px 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Estilização Moderna dos Cards de Manutenção */
+        .cardview {
+            background: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 16px !important;
+            padding: 14px 16px !important;
+            width: 100% !important;
+            height: auto !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .cardview-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .cardview-info {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .titulo_cardview {
+            color: var(--text-main) !important;
+            font-size: 16px !important;
+            font-weight: 700 !important;
+        }
+
+        .subtitulo_cardview {
+            color: var(--text-muted) !important;
+            font-size: 13px !important;
+            margin-top: 2px;
+        }
+
+        .texto_adicional_cardview {
+            color: var(--accent-green) !important;
+            font-size: 12px !important;
+            font-weight: 600;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Botão Flutuante de Adicionar (Substitui o save antigo) */
+        #save {
+            position: fixed !important;
+            bottom: 24px !important;
+            right: 24px !important;
+            left: auto !important;
+            top: auto !important;
+            width: 56px !important;
+            height: 56px !important;
+            background-color: var(--accent-blue) !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+            cursor: pointer;
+            z-index: 1000;
+            border: none !important;
+            padding: 0 !important;
+        }
+        #save::before {
+            content: "\F4FE"; /* Ícone plus do Bootstrap Icons */
+            font-family: "bootstrap-icons";
+            font-size: 26px;
+            color: #ffffff;
+        }
+
+        /* Modal Moderno */
+        .custom-modal {
+            background-color: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(5px);
+        }
+        .custom-modal-dialog {
+            background-color: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 20px !important;
+            color: var(--text-main) !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+        }
+        .custom-modal-cabecalho {
+            border-bottom: 1px solid var(--border-color) !important;
+        }
+        .custom-modal-title {
+            color: var(--text-main) !important;
+        }
+        .custom-modal-close {
+            color: var(--text-muted) !important;
+        }
+        .custom-modal-rodape {
+            border-top: 1px solid var(--border-color) !important;
+        }
+
+        /* Inputs do Modal */
+        .form-control {
+            background-color: #0f172a !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-main) !important;
+            width: 100% !important;
+            height: 44px !important;
+            border-radius: 10px !important;
+            padding: 10px 14px !important;
+            margin-bottom: 10px !important;
+        }
+        .form-control:focus {
+            border-color: var(--accent-blue) !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+        }
+
+        #btnsalvar {
+            background-color: var(--accent-blue) !important;
+            width: 100% !important;
+            height: 44px !important;
+            font-weight: 600 !important;
+            border-radius: 10px !important;
+        }
+
+        #loading-spinner {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="loading-page-bb" style="opacity: 0; transition: opacity 0.3s ease;">
+    
+    <!-- Cabeçalho -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="d-flex align-items-center gap-2">
+                <a href="index.html" class="btn-voltar" title="Voltar ao início">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="h6 mb-0 fw-bold" id="lbltudo" style="cursor: pointer;">Manutenção</h1>
+                    <small style="color: var(--text-muted); font-size: 11px;">Histórico de gastos com o veículo</small>
+                </div>
+            </div>
+            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1">
+                <i class="bi bi-tools me-1"></i> Táxi
+            </span>
+        </div>
+    </header>
+
+    <!-- Lista de Manutenções -->
+    <main class="lista-container">
+        <div class="section-title">
+            <span>REGISTROS RECENTES</span>
+            <i class="bi bi-clock-history"></i>
+        </div>
+
+        <div id="loading-spinner">
+            <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+            Carregando manutenções...
+        </div>
+
+        <div id="telasaldo" style="display: flex; flex-direction: column; gap: 12px; width: 100%;"></div>
+    </main>
+
+    <!-- Modal de Cadastro -->
+    <div class="custom-modal custom-show" id="modaladdcorrida" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true" data-custom-show="true" style="display: none; position: fixed; top: 0px; left: 0px; width: 100%; height: 100%; align-items: center; justify-content: center; z-index: 4999;">
+        <div class="custom-modal-dialog" role="document" style="max-width: 400px; width: 90%; padding: 20px;">
+            <div class="custom-modal-conteudo" id="modal-content_1">
+                <div class="custom-modal-cabecalho" id="modal-header_1" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; margin-bottom: 15px;">
+                    <h1 class="custom-modal-title" id="title_1" style="font-size: 18px; font-weight: bold; margin:0;">Nova Manutenção</h1>
+                    <button class="custom-modal-close" id="icon_1" aria-label="Close" style="background: none; border: none; font-size: 22px; cursor: pointer;"><i class="bi bi-x-lg"></i></button>
+                </div>
+                <div class="custom-modal-body" id="modal-body_1" style="display: flex; flex-direction: column; gap: 8px;">
+                    <input class="form-control" id="txitem" placeholder="Item (Ex: Pneu, Óleo...)" type="text">
+                    <input class="form-control" id="txvalor" placeholder="Valor (R$)" type="number">
+                    <input class="form-control" id="txloja" placeholder="Loja / Oficina" type="text">
+                    <input class="form-control" id="txkm" placeholder="KM atual" type="number">
+                </div>
+                <div class="custom-modal-rodape" id="modal-footer_1" style="padding-top: 15px; display: flex; justify-content: center;">
+                    <button class="btn" id="btnsalvar">Salvar Manutenção</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão Flutuante de Adicionar -->
+    <div id="save" title="Nova Manutenção"></div>
+
+</div>
+
+<!-- Bibliotecas Externas -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-auth.js"></script>
+<script src="https://bootsites.com.br/cdn/bootblocks@1.01/js/bootblocks.js"></script>
+
+<!-- Lógica JavaScript Integrada -->
+<script>
+    var tabelaidlogin, resposta_inserir_linha, resultado_linhas, todosareceber, tabelaidloginnome, tabelaidgasto, tabelaidmanutencao, id, somaareceber, tabelaidcorridas, Item, todossaldos, tabelaidcorridacliente, somadesaldo, tabelaidcorridavalor, tabelaidcorridainformacao, tabelaidsaldo, tabelaidsaldodata, tabelaidgastoinformacao, tabelaidgastodata, tabelaidmensal, tabelaidmensalmes, tabelaidmanutecaodata;
+
+    function salvarmanutencao() {
+        if (!document.getElementById('txvalor').value.length) {
+            Swal.fire('Preencha o valor');
+        } else {
+            function insertRow() {
+                let jsonData = {};
+                let colunas = ['item', 'data', 'valor', 'km', 'loja'];
+                let valores = [document.getElementById('txitem').value, new Date().toLocaleDateString(), document.getElementById('txvalor').value, document.getElementById('txkm').value, document.getElementById('txloja').value];
+                for (let i = 0; i < colunas.length; i++) {
+                    jsonData[colunas[i]] = valores[i];
+                }
+                fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidmanutencao + "/?user_field_names=true", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Token " + bb_baserow_token,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(jsonData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resposta_inserir_linha = data;
+                    salvargasto();
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+            }
+            insertRow();
+        }
+    }
+
+    function salvargasto() {
+        function insertRow() {
+            let jsonData = {};
+            let colunas = ['informacao', 'valor', 'data'];
+            let valores = [document.getElementById('txitem').value, document.getElementById('txvalor').value, new Date().toLocaleDateString()];
+            for (let i = 0; i < colunas.length; i++) {
+                jsonData[colunas[i]] = valores[i];
+            }
+            fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidgasto + "/?user_field_names=true", {
+                method: "POST",
+                headers: {
+                    "Authorization": "Token " + bb_baserow_token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                resposta_inserir_linha = data;
+                Swal.fire({
+                    title: 'Salvo com sucesso!',
+                    timer: 1000,
+                    showConfirmButton: false
+                });
+                $("#" + 'modaladdcorrida').fadeOut(200);
+                window.location.href = "reset.html";
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            });
+        }
+        insertRow();
+    }
+
+    var bb_baserow_token = 'IKrER8jZ6NQENRIxVlNeF65L5J3ss1LH';
+    var bb_baserow_url = 'https://api.baserow.io/';
+
+    // Inicialização
+    tabelaidlogin = '177839';
+    tabelaidloginnome = '1188492';
+    tabelaidcorridas = '177840';
+    tabelaidcorridacliente = '1188495';
+    tabelaidcorridavalor = '1188513';
+    tabelaidcorridainformacao = '1188496';
+    tabelaidsaldo = '177842';
+    tabelaidsaldodata = '1188503';
+    tabelaidgasto = '177843';
+    tabelaidgastoinformacao = '1188504';
+    tabelaidgastodata = '1188515';
+    tabelaidmensal = '209979';
+    tabelaidmensalmes = '1448198';
+    tabelaidmanutencao = '262318';
+    tabelaidmanutecaodata = '1863221';
+
+    todosareceber = [];
+    somaareceber = 0;
+    todossaldos = [];
+    somadesaldo = 0;
+
+    function qclick() {
+        let elementoClick = document.getElementById('btnsalvar');
+        if (elementoClick) {
+            elementoClick.addEventListener("click", function () {
+                salvarmanutencao();
+            });
+        }
+    }
+    qclick();
+
+    function qclick2() {
+        let elementoClick = document.getElementById('save');
+        if (elementoClick) {
+            elementoClick.addEventListener("click", function () {
+                $("#" + 'modaladdcorrida').css("display", "flex").hide().fadeIn(200);
+            });
+        }
+    }
+    qclick2();
+
+    // Fechar modal no X
+    document.getElementById('icon_1').addEventListener('click', function() {
+        $("#modaladdcorrida").fadeOut(200);
+    });
+
+    function getRows() {
+        fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidmanutencao + "/?user_field_names=true&page=" + '1', {
+            method: "GET",
+            headers: {
+                "Authorization": "Token " + bb_baserow_token
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            $("#loading-spinner").hide();
+            resultado_linhas = data.results;
+            id = 0;
+            var Item_list = (resultado_linhas.reverse());
+            
+            for (var Item_index in Item_list) {
+                Item = Item_list[Item_index];
+                id = id + 1;
+                
+                var card = '<div class="cardview" id="' + id + '">';
+                card += '  <div class="cardview-left">';
+                card += '    <div class="icon-wrapper">';
+                card += '      <i class="bi bi-wrench"></i>';
+                card += '    </div>';
+                card += '    <div class="cardview-info">';
+                card += '      <span class="titulo_cardview">' + ([Item['item'], ' - R$ ', Item['valor']].join('')) + '</span>';
+                card += '      <span class="subtitulo_cardview"><i class="bi bi-shop me-1"></i>' + (Item['loja'] || 'Loja não informada') + ' &bull; <span style="color:#60a5fa;">' + (Item['data']) + '</span></span>';
+                card += '      <span class="texto_adicional_cardview"><i class="bi bi-speedometer2"></i> KM: ' + String(Item['km']) + '</span>';
+                card += '    </div>';
+                card += '  </div>';
+                card += '</div>';
+
+                document.getElementById("telasaldo").innerHTML += card;
+                todosareceber.push((Item['valor']));
+            }
+            
+            for (var Item_index2 in todosareceber) {
+                Item = todosareceber[Item_index2];
+                somadesaldo = (txt_to_number(somadesaldo)) + (txt_to_number(Item));
+            }
+            
+            var totalFormatado = format_decimal_number(somadesaldo, 2, true);
+            $("#lbltudo").html('Manutenção: R$ ' + totalFormatado);
+        })
+        .catch((error) => {
+            $("#loading-spinner").html('<span class="text-danger">Erro ao carregar dados.</span>');
+            console.error("Error:", error);
+        });
+    }
+    getRows();
+
+    function qclick3() {
+        let elementoClick = document.getElementById('lbltudo');
+        if (elementoClick) {
+            elementoClick.addEventListener("click", function () {
+                window.location.href = "index.html";
+            });
+        }
+    }
+    qclick3();
+
+    function txt_to_number(txt) {
+        txt = txt + "";
+        if (txt.includes(",")) {
+            txt = txt.replace(",", ".");
+        }
+        if (txt.includes(".")) {
+            txt = parseFloat(txt);
+        } else {
+            txt = parseInt(txt);
+        }
+        return isNaN(txt) ? 0 : txt;
+    }
+
+    function format_decimal_number(number, places, virgula = false) {
+        number = number + "";
+        if (number.includes(",")) {
+            number = number.replace(",", ".");
+            number = parseFloat(number);
+        } else {
+            number = parseFloat(number);
+        }
+        number = number.toFixed(places);
+        if (virgula) {
+            number = number.replace(".", ",");
+        }
+        return number;
+    }
+
+    $(document).ready(function () {
+        $("#loading-page-bb").css("opacity", "1");
+    });
+</script>
+
+</body>
+</html>
