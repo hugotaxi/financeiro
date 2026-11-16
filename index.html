@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f1f5f9">
+    <title>Controle - Táxi</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- SweetAlert2 -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f1f5f9;
+            --accent-blue: #2563eb;
+            --accent-green: #059669;
+            --accent-yellow: #d97706;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topo com Banner e Seletor */
+        .hero-section {
+            background: linear-gradient(rgba(248, 250, 252, 0.85), rgba(248, 250, 252, 0.95)), url("assets/victorcima1.jpg") center/cover no-repeat;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .form-select {
+            background-color: var(--bg-card) !important;
+            color: var(--accent-yellow) !important;
+            border: 1px solid var(--border-color) !important;
+            font-weight: 600;
+            border-radius: 12px;
+            padding: 10px 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .form-select option {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+        }
+
+        /* Container Principal */
+        .main-container {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            flex-grow: 1;
+        }
+
+        /* Cards de Resumo */
+        .summary-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .summary-card:active {
+            transform: scale(0.98);
+        }
+
+        /* Inputs e Formulários */
+        .form-control {
+            background-color: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-main) !important;
+            border-radius: 12px !important;
+            padding: 12px 14px !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .form-control:focus {
+            border-color: var(--accent-blue) !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+        }
+
+        /* Grade de Atalhos de Valores (Ícones rápidos) */
+        .shortcuts-grid {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            scrollbar-width: thin;
+        }
+        .shortcut-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 12px;
+            min-width: 54px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            transition: 0.2s;
+        }
+        .shortcut-btn:active {
+            background: var(--accent-blue);
+            color: white;
+            transform: scale(0.95);
+        }
+
+        /* Botões de Ação Inferior */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 10px;
+        }
+        .btn-acao {
+            flex: 1;
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 12px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        #button_1 {
+            background-color: var(--accent-yellow);
+            color: #ffffff;
+        }
+        #button_2 {
+            background-color: #dc2626;
+            color: #ffffff;
+        }
+
+        #loading-page-bb {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+<div id="loading-page-bb" style="opacity: 0; height: 100%;">
+    
+    <!-- Topo / Seletor de Telas -->
+    <div class="hero-section" id="div_1">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <div id="space_1" style="cursor: pointer;" title="Ir para Corridas de Clientes">
+                <span class="badge bg-warning text-dark px-2 py-1 shadow-sm"><i class="bi bi-taxi-front-fill me-1"></i> Hugo Táxi</span>
+            </div>
+        </div>
+        <select class="form-select" id="select_1"></select>
+    </div>
+
+    <!-- Área de Resumos e Indicadores -->
+    <div class="main-container">
+        
+        <!-- Bloco Diária / Média -->
+        <div class="summary-card" id="dvtexto">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span id="l1" style="font-weight: 600; font-size: 14px; color: var(--accent-green);">Diária: Carregando...</span>
+                <span id="l2" style="font-size: 13px; color: var(--text-muted);">Média por corrida</span>
+            </div>
+            <div id="lbultima" style="font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 6px; margin-top: 4px;">
+                Última corrida: ...
+            </div>
+        </div>
+
+        <!-- Bloco Detalhado (Oculto inicialmente, abre ao tocar no card acima) -->
+        <div class="summary-card" id="l3" style="display: none; font-size: 13px; line-height: 1.6; border-left: 4px solid var(--accent-blue);">
+            Carregando detalhes...
+        </div>
+
+        <!-- Tela de Entrada de Valores e KM -->
+        <div id="telarestante" style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="d-flex gap-2">
+                <input class="form-control" id="txtvalor" placeholder="Valor (R$)" type="number">
+                <input class="form-control" id="txtkm" placeholder="KM Atual" type="text" style="display: none;">
+            </div>
+            <input class="form-control" id="txtcorrida" placeholder="Descrição da Corrida / Local" type="text">
+        </div>
+
+        <!-- Atalhos Rápidos de Valores (10 ao 25 + Novos 27 ao 32) -->
+        <div class="shortcuts-grid" id="telab1">
+            <div class="shortcut-btn" id="icon_10">10</div>
+            <div class="shortcut-btn" id="icon_11">11</div>
+            <div class="shortcut-btn" id="icon_12">12</div>
+            <div class="shortcut-btn" id="icon_13">13</div>
+            <div class="shortcut-btn" id="icon_14">14</div>
+            <div class="shortcut-btn" id="icon_15">15</div>
+            <div class="shortcut-btn" id="icon_16">16</div>
+            <div class="shortcut-btn" id="icon_17">17</div>
+            <div class="shortcut-btn" id="icon_18">18</div>
+            <div class="shortcut-btn" id="icon_19">19</div>
+            <div class="shortcut-btn" id="icon_20">20</div>
+        </div>
+
+        <div class="shortcuts-grid" id="telab2">
+            <div class="shortcut-btn" id="icon_21">21</div>
+            <div class="shortcut-btn" id="icon_22">22</div>
+            <div class="shortcut-btn" id="icon_23">23</div>
+            <div class="shortcut-btn" id="icon_24">24</div>
+            <div class="shortcut-btn" id="icon_25">25</div>
+            <div class="shortcut-btn" id="icon_26">27</div>
+            <div class="shortcut-btn" id="icon_27">28</div>
+            <div class="shortcut-btn" id="icon_28">29</div>
+            <div class="shortcut-btn" id="icon_29">30</div>
+            <div class="shortcut-btn" id="icon_30">31</div>
+            <div class="shortcut-btn" id="icon_31">32</div>
+        </div>
+
+        <div id="space_mexer"></div>
+
+        <!-- Botões de Ação Final -->
+        <div class="action-buttons" id="dvbutao">
+            <button class="btn-acao" id="button_1"><i class="bi bi-check-circle-fill"></i> Salvar Saldo</button>
+            <span id="text_1"></span>
+            <button class="btn-acao" id="button_2"><i class="bi bi-dash-circle-fill"></i> Salvar Gasto</button>
+        </div>
+
+    </div>
+
+    <!-- Bibliotecas Externas -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-auth.js"></script>
+    <script src="https://bootsites.com.br/cdn/bootblocks@1.01/js/bootblocks.js"></script>
+
+    <!-- Lógica JavaScript Original Integrada -->
+    <script>
+        var valorextra, tabelaidsaldo, resultado_pesquisa, idquantcorrida, resultadodiaria, resultadogastos, resultado_linhas, resugastodia, areceberhoje, Item, abrirtela, tabelaidsaldodata, tabelaidagendamento, tabelaagendadata, dataamanha, tabelaidgasto, somagastodia, criarcodigo, resposta_inserir_linha, tabelaidgastodata, idd, tabelaidcorridas, tabelaidgastoinformacao, localdacorrida, tabelaidcorridainformacao, valorss, idnsaldo, id, opcaoselect, tabelaidlogin, ultimocodigo, idngastodia, abastecimento, idquantdecorridahj, somadesaldo, tabelaidloginnome, todosgastodia, todosareceber, quantabastecimento, todosareceberhoje, valorareceberhoje, idss, idareceber, todasdiarias, somadiarias, todosgastos, idngasto, todosvalores, vlabastecimento, locaiss, tabelaidcorridacliente, somagastos, somaareceber, tabelaidcorridavalor, datass, tabelaidmensal, tabelaidmensalmes, temporizador_1, todossaldos, temporizador2, contclick;
+
+        function callveragendamentos() {
+            function getRowsSearch() {
+                fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidagendamento + "/?user_field_names=true&filter__field_" + tabelaagendadata + "__" + "equal" + "=" + dataamanha + "&order_by=" + "+" + 'data', {
+                    method: "GET",
+                    headers: { "Authorization": "Token " + bb_baserow_token }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resultado_pesquisa = data.results;
+                    for (var Item_index2 in resultado_pesquisa) {
+                        Item = resultado_pesquisa[Item_index2];
+                        $("#text_1").html('<span style="font-size:14px; color:#dc2626; font-weight:bold;">Atenção</span>');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Atenção',
+                            text: 'Amanhã temos agendamento!'
+                        });
+                    }
+                })
+                .catch((error) => { console.error("Error:", error); });
+            }
+            getRowsSearch();
+        }
+
+        function codigoabastecimento() {
+            function getRowsSearch() {
+                fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidgasto + "/?user_field_names=true&filter__field_" + '1188504' + "__" + "equal" + "=" + 'Abastecimento' + "&order_by=" + "+" + 'informacao' + "&page=" + '0', {
+                    method: "GET",
+                    headers: { "Authorization": "Token " + bb_baserow_token }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resultado_pesquisa = data.results;
+                    for (var Item_index3 in resultado_pesquisa) {
+                        Item = resultado_pesquisa[Item_index3];
+                        ultimocodigo = (Item['codigo']);
+                        localStorage.setItem('codigo', ultimocodigo);
+                    }
+                })
+                .catch((error) => { console.error("Error:", error); });
+            }
+            getRowsSearch();
+        }
+
+        function inicio() {
+            function getRowsSearch() {
+                fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidsaldo + "/?user_field_names=true&filter__field_" + tabelaidsaldodata + "__" + "equal" + "=" + (new Date().toLocaleDateString()) + "&order_by=" + "+" + 'data', {
+                    method: "GET",
+                    headers: { "Authorization": "Token " + bb_baserow_token }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resultadodiaria = data.results;
+                    for (var Item_index4 in resultadodiaria) {
+                        Item = resultadodiaria[Item_index4];
+                        idquantcorrida = idquantcorrida + 1;
+                        todasdiarias.push((Item['valor']));
+                        $("#lbultima").html('Última: <strong>' + Item['local'] + '</strong> / R$ ' + Item['valor'] + ' / ' + Item['hora']);
+                    }
+                    for (var Item_index5 in todasdiarias) {
+                        Item = todasdiarias[Item_index5];
+                        somadiarias = (txt_to_number(somadiarias)) + (txt_to_number(Item));
+                    }
+                    $("#l1").html('Diária: R$ ' + format_decimal_number(somadiarias, 2, true) + ' (N° ' + idquantcorrida + ')');
+                    var media = idquantcorrida > 0 ? (somadiarias / idquantcorrida) : 0;
+                    $("#l2").html('Média: R$ ' + format_decimal_number(media, 2, true));
+                    codigoabastecimento();
+                })
+                .catch((error) => { console.error("Error:", error); });
+            }
+            getRowsSearch();
+        }
+
+        function mathRandomInt(a, b) {
+            if (a > b) { var c = a; a = b; b = c; }
+            return Math.floor(Math.random() * (b - a + 1) + a);
+        }
+
+        function svgasto() {
+            if (!document.getElementById('txtvalor').value.length) {
+                window.location.href = "manutencao.html";
+            } else if (document.getElementById('txtcorrida').value == 'Abastecimento ') {
+                criarcodigo = mathRandomInt(100, 999);
+                function insertRow() {
+                    let jsonData = {};
+                    let colunas = ['informacao', 'valor', 'data', 'codigo', 'km'];
+                    let valores = [document.getElementById('txtcorrida').value, document.getElementById('txtvalor').value, new Date().toLocaleDateString(), criarcodigo, document.getElementById('txtkm').value];
+                    for (let i = 0; i < colunas.length; i++) { jsonData[colunas[i]] = valores[i]; }
+                    fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidgasto + "/?user_field_names=true", {
+                        method: "POST",
+                        headers: { "Authorization": "Token " + bb_baserow_token, "Content-Type": "application/json" },
+                        body: JSON.stringify(jsonData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        Swal.fire({ title: 'Gasto salvo!', timer: 1000, showConfirmButton: false });
+                        window.location.href = "reset.html";
+                    })
+                    .catch((error) => { console.error("Error:", error); });
+                }
+                insertRow();
+            } else {
+                function insertRow() {
+                    let jsonData = {};
+                    let colunas = ['informacao', 'valor', 'data'];
+                    let valores = [document.getElementById('txtcorrida').value, document.getElementById('txtvalor').value, new Date().toLocaleDateString()];
+                    for (let i = 0; i < colunas.length; i++) { jsonData[colunas[i]] = valores[i]; }
+                    fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidgasto + "/?user_field_names=true", {
+                        method: "POST",
+                        headers: { "Authorization": "Token " + bb_baserow_token, "Content-Type": "application/json" },
+                        body: JSON.stringify(jsonData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        Swal.fire({ title: 'Gasto salvo!', timer: 1000, showConfirmButton: false });
+                        window.location.href = "reset.html";
+                    })
+                    .catch((error) => { console.error("Error:", error); });
+                }
+                insertRow();
+            }
+        }
+
+        function callgastos() {
+            function getRowsSearch() {
+                fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidgasto + "/?user_field_names=true&filter__field_" + tabelaidgastodata + "__" + "not_equal" + "=" + '**' + "&order_by=" + "+" + 'data', {
+                    method: "GET",
+                    headers: { "Authorization": "Token " + bb_baserow_token }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resultadogastos = data.results;
+                    idd = 0;
+                    var Item_list = (resultadogastos.reverse());
+                    for (var Item_index6 in Item_list) {
+                        Item = Item_list[Item_index6];
+                        idd = idd + 1;
+                        todosgastos.push((Item['valor']));
+                    }
+                    for (var Item_index7 in todosgastos) {
+                        Item = todosgastos[Item_index7];
+                        idngasto = idngasto + 1;
+                        somagastos = (txt_to_number(somagastos)) + (txt_to_number(Item));
+                    }
+                    callreceber();
+                })
+                .catch((error) => { console.error("Error:", error); });
+            }
+            getRowsSearch();
+        }
+
+        function callreceber() {
+            function getRows() {
+                fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidcorridas + "/?user_field_names=true&page=" + '1', {
+                    method: "GET",
+                    headers: { "Authorization": "Token " + bb_baserow_token }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resultado_linhas = data.results;
+                    for (var Item_index8 in resultado_linhas) {
+                        Item = resultado_linhas[Item_index8];
+                        todosareceber.push((Item['valor']));
+                    }
+                    function getRows2() {
+                        fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidcorridas + "/?user_field_names=true&page=" + '2', {
+                            method: "GET",
+                            headers: { "Authorization": "Token " + bb_baserow_token }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            resultado_linhas = data.results;
+                            for (var Item_index9 in resultado_linhas) {
+                                Item = resultado_linhas[Item_index9];
+                                todosareceber.push((Item['valor']));
+                            }
+                            for (var Item_index10 in todosareceber) {
+                                Item = todosareceber[Item_index10];
+                                idareceber = idareceber + 1;
+                                somaareceber = (txt_to_number(somaareceber)) + (txt_to_number(Item));
+                            }
+                            callgastodia();
+                        })
+                        .catch((error) => { callgastodia(); });
+                    }
+                    getRows2();
+                })
+                .catch((error) => { callgastodia(); });
+            }
+            getRows();
+        }
+
+        function callgastodia() {
+            function getRowsSearch() {
+                fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidgasto + "/?user_field_names=true&filter__field_" + tabelaidgastodata + "__" + "equal" + "=" + (new Date().toLocaleDateString()) + "&order_by=" + "+" + 'data', {
+                    method: "GET",
+                    headers: { "Authorization": "Token " + bb_baserow_token }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resugastodia = data.results;
+                    for (var Item_index11 in resugastodia) {
+                        Item = resugastodia[Item_index11];
+                        todosgastodia.push((Item['valor']));
+                    }
+                    for (var Item_index12 in todosgastodia) {
+                        Item = todosgastodia[Item_index12];
+                        idngastodia = idngastodia + 1;
+                        somagastodia = (txt_to_number(somagastodia)) + (txt_to_number(Item));
+                    }
+                    abastecimentos();
+                })
+                .catch((error) => { console.error("Error:", error); });
+            }
+            getRowsSearch();
+        }
+
+        function abastecimentos() {
+            function getRowsSearch() {
+                fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidgasto + "/?user_field_names=true&filter__field_" + tabelaidgastoinformacao + "__" + "contains" + "=" + 'Abastecimento' + "&order_by=" + "+" + 'informacao', {
+                    method: "GET",
+                    headers: { "Authorization": "Token " + bb_baserow_token }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resultado_pesquisa = data.results;
+                    if (!resultado_pesquisa.length) {
+                        abastecimento = 0;
+                    } else {
+                        for (var Item_index13 in resultado_pesquisa) {
+                            Item = resultado_pesquisa[Item_index13];
+                            quantabastecimento = quantabastecimento + 1;
+                            todosvalores.push((Item['valor']));
+                        }
+                        for (var Item_index14 in todosvalores) {
+                            Item = todosvalores[Item_index14];
+                            vlabastecimento = (txt_to_number(vlabastecimento)) + (txt_to_number(Item));
+                        }
+                    }
+                    calldiariaareceberdepois();
+                })
+                .catch((error) => { console.error("Error:", error); });
+            }
+            getRowsSearch();
+        }
+
+        function svsaldo() {
+            localdacorrida = !document.getElementById('txtcorrida').value.length ? 'Extra' : document.getElementById('txtcorrida').value;
+            var valorFinal = !document.getElementById('txtvalor').value.length ? valorextra : document.getElementById('txtvalor').value;
+
+            function insertRow() {
+                let jsonData = {};
+                let colunas = ['local', 'valor', 'data', 'hora', 'codigo'];
+                let valores = [localdacorrida, valorFinal, new Date().toLocaleDateString(), new Date().toLocaleTimeString(), ultimocodigo];
+                for (let i = 0; i < colunas.length; i++) { jsonData[colunas[i]] = valores[i]; }
+                fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidsaldo + "/?user_field_names=true", {
+                    method: "POST",
+                    headers: { "Authorization": "Token " + bb_baserow_token, "Content-Type": "application/json" },
+                    body: JSON.stringify(jsonData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    Swal.fire({ title: 'Saldo salvo!', timer: 1000, showConfirmButton: false });
+                    window.location.href = "reset.html";
+                })
+                .catch((error) => { console.error("Error:", error); });
+            }
+            insertRow();
+        }
+
+        function calldiariaareceberdepois() {
+            function getRowsSearch() {
+                fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidcorridas + "/?user_field_names=true&filter__field_" + tabelaidcorridainformacao + "__" + "contains" + "=" + (new Date().toLocaleDateString()) + "&order_by=" + "+" + 'informacao', {
+                    method: "GET",
+                    headers: { "Authorization": "Token " + bb_baserow_token }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    areceberhoje = data.results;
+                    var Item_list2 = (areceberhoje.reverse());
+                    for (var Item_index15 in Item_list2) {
+                        Item = Item_list2[Item_index15];
+                        idquantdecorridahj = idquantdecorridahj + 1;
+                        todosareceberhoje.push((Item['valor']));
+                    }
+                    for (var Item_index16 in todosareceberhoje) {
+                        Item = todosareceberhoje[Item_index16];
+                        valorareceberhoje = (txt_to_number(valorareceberhoje)) + (txt_to_number(Item));
+                    }
+                    setlistsomasaldo();
+                })
+                .catch((error) => { console.error("Error:", error); });
+            }
+            getRowsSearch();
+        }
+
+        function todosossaldos() {
+            function getRows() {
+                fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidsaldo + "/?user_field_names=true&page=" + '1', {
+                    method: "GET",
+                    headers: { "Authorization": "Token " + bb_baserow_token }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resultado_linhas = data.results;
+                    for (var Item_index17 in resultado_linhas) {
+                        Item = resultado_linhas[Item_index17];
+                        idss.push((Item['id']));
+                        locaiss.push((Item['local']));
+                        valorss.push((Item['valor']));
+                        datass.push((Item['data']));
+                    }
+                    function getRows2() {
+                        fetch(bb_baserow_url + "api/database/rows/table/" + tabelaidsaldo + "/?user_field_names=true&page=" + '2', {
+                            method: "GET",
+                            headers: { "Authorization": "Token " + bb_baserow_token }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            resultado_linhas = data.results;
+                            for (var Item_index18 in resultado_linhas) {
+                                Item = resultado_linhas[Item_index18];
+                                idss.push((Item['id']));
+                                locaiss.push((Item['local']));
+                                valorss.push((Item['valor']));
+                                datass.push((Item['data']));
+                            }
+                            callgastos();
+                        })
+                        .catch((error) => { callgastos(); });
+                    }
+                    getRows2();
+                })
+                .catch((error) => { callgastos(); });
+            }
+            getRows();
+        }
+
+        function setlistsomasaldo() {
+            for (var Item_index21 in valorss) {
+                Item = valorss[Item_index21];
+                idnsaldo = idnsaldo + 1;
+                somadesaldo = (txt_to_number(somadesaldo)) + (txt_to_number(Item));
+            }
+            mostrar();
+        }
+
+        function mostrar() {
+            var htmlDetalhes = `
+                <strong>Diária Recebida:</strong> R$ ${format_decimal_number((somadiarias - valorareceberhoje), 2, true)} (N° ${idquantcorrida - idquantdecorridahj})<br>
+                <strong>Diária a Receber:</strong> R$ ${format_decimal_number(valorareceberhoje, 2, true)} (N° ${idquantdecorridahj})<br>
+                <strong>Lucro do Dia:</strong> R$ ${format_decimal_number((somadiarias - somagastodia), 2, true)}<br>
+                <strong>Gasto do Dia:</strong> R$ ${format_decimal_number(somagastodia, 2, true)} (N° ${idngastodia})<br>
+                <strong>A Receber Total:</strong> R$ ${format_decimal_number(somaareceber, 2, true)} (N° ${idareceber})<br>
+                <strong>Saldo Total:</strong> R$ ${format_decimal_number(somadesaldo, 2, true)} (N° ${idnsaldo})<br>
+                <strong>Gasto Total:</strong> R$ ${format_decimal_number(somagastos, 2, true)} (N° ${idngasto})<br>
+                <strong>Abastecimento:</strong> R$ ${format_decimal_number(vlabastecimento, 2, true)} (N° ${quantabastecimento})<br>
+                <strong>Lucro do Mês:</strong> R$ ${format_decimal_number((somadesaldo - somagastos), 2, true)}
+            `;
+            $("#l3").html(htmlDetalhes).show();
+        }
+
+        // Inicialização
+        valorextra = 0;
+        abrirtela = [];
+        opcaoselect = ['Hugo Táxi', 'clientes', 'saldos/gastos', 'orcamento', 'manutencao', 'abastecimento', 'agendamento'];
+        
+        var selectEl = document.getElementById("select_1");
+        selectEl.innerHTML = '';
+        for (var Item_index in opcaoselect) {
+            Item = opcaoselect[Item_index];
+            var selectedAttr = (Item === 'Hugo Táxi') ? ' selected' : '';
+            $("#select_1").append("<option value=" + Item + selectedAttr + ">" + Item.toUpperCase() + "</option>");
+        }
+
+        tabelaidsaldo = '177842';
+        tabelaidsaldodata = '1188503';
+        tabelaidlogin = '177839';
+        tabelaidloginnome = '1188492';
+        tabelaidcorridas = '177840';
+        tabelaidcorridacliente = '1188495';
+        tabelaidcorridavalor = '1188513';
+        tabelaidcorridainformacao = '1188496';
+        tabelaidgasto = '177843';
+        tabelaidgastoinformacao = '1188504';
+        tabelaidgastodata = '1188515';
+        tabelaidmensal = '209979';
+        tabelaidmensalmes = '1448198';
+        tabelaidagendamento = '759064';
+        tabelaagendadata = '6422239';
+
+        temporizador_1 = setInterval(function () {
+            dataamanha = "15/05/2026";
+            callveragendamentos();
+            clearInterval(temporizador_1);
+            temporizador2 = setInterval(function () {
+                inicio();
+                clearInterval(temporizador2);
+            }, 1800);
+        }, 3);
+
+        $("#select_1").change(function () {
+            var val = $(this).val();
+            if (val == 'clientes') { window.location.href = "clientes.html"; }
+            else if (val == 'saldos/gastos') { window.location.href = "saldoegasto.html"; }
+            else if (val == 'orcamento') { window.location.href = "orcamento.html"; }
+            else if (val == 'manutencao') { window.location.href = "manutencao.html"; }
+            else if (val == 'abastecimento') { window.location.href = "abastecimento.html"; }
+            else if (val == 'agendamento') { window.location.href = "agendamento.html"; }
+        });
+
+        var bb_baserow_token = 'IKrER8jZ6NQENRIxVlNeF65L5J3ss1LH';
+        var bb_baserow_url = 'https://api.baserow.io/';
+
+        idquantcorrida = 0;
+        somagastodia = 0;
+        idngastodia = 0;
+        todosgastodia = [];
+        idareceber = 0;
+        idnsaldo = 0;
+        idngasto = 0;
+        quantabastecimento = 0;
+        vlabastecimento = 0;
+        todosvalores = [];
+        idquantdecorridahj = 0;
+        valorareceberhoje = 0;
+        todosareceberhoje = [];
+        idss = [];
+        locaiss = [];
+        valorss = [];
+        datass = [];
+        todossaldos = [];
+        somadesaldo = 0;
+        todasdiarias = [];
+        somadiarias = 0;
+        todosgastos = [];
+        somagastos = 0;
+        todosareceber = [];
+        somaareceber = 0;
+        contclick = 0;
+        localdacorrida = [];
+        ultimocodigo = 0;
+        temporizador2 = 0;
+
+        // Eventos de clique
+        document.getElementById('button_2').addEventListener("click", function () { svgasto(); });
+        document.getElementById('button_1').addEventListener("click", function () { svsaldo(); });
+        
+        document.getElementById('l2').addEventListener("click", function () {
+            todosossaldos();
+            $("#telarestante, #telab1, #telab2").hide();
+        });
+
+        document.getElementById('txtvalor').addEventListener("click", function () {
+            $("#txtkm").show();
+            $("#telab1, #telab2").hide();
+        });
+
+        document.getElementById('space_1').addEventListener("click", function () {
+            window.location.href = "corridasclientes.html";
+        });
+
+        // Atalhos de valores rápidos (10 ao 25 + 27 ao 32)
+        var precosValores = {
+            'icon_10': '10.00', 'icon_11': '11.00', 'icon_12': '12.00', 'icon_13': '13.00',
+            'icon_14': '14.00', 'icon_15': '15.00', 'icon_16': '16.00', 'icon_17': '17.00',
+            'icon_18': '18.00', 'icon_19': '19.00', 'icon_20': '20.00', 'icon_21': '21.00',
+            'icon_22': '22.00', 'icon_23': '23.00', 'icon_24': '24.00', 'icon_25': '25.00',
+            'icon_26': '27.00', 'icon_27': '28.00', 'icon_28': '29.00', 'icon_29': '30.00',
+            'icon_30': '31.00', 'icon_31': '32.00'
+        };
+
+        for (let idIcon in precosValores) {
+            let el = document.getElementById(idIcon);
+            if (el) {
+                el.addEventListener("click", function () {
+                    valorextra = precosValores[idIcon];
+                    svsaldo();
+                });
+            }
+        }
+
+        function txt_to_number(txt) {
+            txt = txt + "";
+            if (txt.includes(",")) { txt = txt.replace(",", "."); }
+            return txt.includes(".") ? parseFloat(txt) : parseInt(txt) || 0;
+        }
+
+        function format_decimal_number(number, places, virgula = false) {
+            number = parseFloat(number) || 0;
+            number = number.toFixed(places);
+            if (virgula) { number = number.replace(".", ","); }
+            return number;
+        }
+
+        $(document).ready(function () {
+            $("#loading-page-bb").css("opacity", "1");
+        });
+    </script>
+
+</body>
+</html>
