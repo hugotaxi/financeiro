@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#f8fafc" id="meta-theme-color">
     <title>Extrato do Cliente - Táxi</title>
     
     <!-- Google Fonts: Inter -->
@@ -19,10 +19,30 @@
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
+        /* Tema Claro Padrão */
         :root {
+            --bg-body: #f1f5f9;
+            --bg-header: rgba(255, 255, 255, 0.9);
+            --bg-card: #ffffff;
+            --bg-card-hover: #f8fafc;
+            --bg-input: #f8fafc;
+            --accent-blue: #2563eb;
+            --accent-green: #059669;
+            --accent-orange: #ea580c;
+            --accent-red: #dc2626;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: rgba(15, 23, 42, 0.1);
+            --card-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+        }
+
+        /* Tema Escuro */
+        [data-theme="dark"] {
             --bg-body: #0f172a;
+            --bg-header: rgba(15, 23, 42, 0.85);
             --bg-card: #1e293b;
             --bg-card-hover: #334155;
+            --bg-input: #0f172a;
             --accent-blue: #3b82f6;
             --accent-green: #10b981;
             --accent-orange: #f97316;
@@ -30,6 +50,7 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border-color: rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         body {
@@ -38,33 +59,36 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
+            transition: background-color 0.25s ease, color 0.25s ease;
             -webkit-tap-highlight-color: transparent;
         }
 
         /* Cabeçalho Superior Fixo */
         .app-header {
-            background: rgba(15, 23, 42, 0.85);
+            background: var(--bg-header);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
             z-index: 100;
-            padding: 16px;
+            padding: 14px 16px;
+            transition: background-color 0.25s ease;
         }
 
         .header-top {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 8px;
         }
 
         .btn-acao-topo {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -72,6 +96,7 @@
             text-decoration: none;
             transition: 0.2s;
             cursor: pointer;
+            box-shadow: var(--card-shadow);
         }
 
         .btn-acao-topo:active {
@@ -105,7 +130,7 @@
             padding: 14px 16px !important;
             width: 100% !important;
             height: auto !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            box-shadow: var(--card-shadow) !important;
             transition: all 0.2s ease;
             cursor: pointer;
             position: relative;
@@ -125,8 +150,8 @@
             width: 48px;
             height: 48px;
             border-radius: 12px;
-            background: rgba(59, 130, 246, 0.15);
-            color: #60a5fa;
+            background: rgba(59, 130, 246, 0.12);
+            color: var(--accent-blue);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -173,7 +198,7 @@
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35) !important;
             cursor: pointer;
             z-index: 1000;
             border: none !important;
@@ -188,7 +213,7 @@
 
         /* Painel Inferior de Ações */
         #telabotoes {
-            background: rgba(15, 23, 42, 0.95) !important;
+            background: var(--bg-header) !important;
             backdrop-filter: blur(10px);
             border-top: 1px solid var(--border-color) !important;
             position: fixed !important;
@@ -222,7 +247,7 @@
 
         /* Modal Moderno */
         .custom-modal {
-            background-color: rgba(15, 23, 42, 0.8) !important;
+            background-color: rgba(15, 23, 42, 0.65) !important;
             backdrop-filter: blur(5px);
         }
         .custom-modal-dialog {
@@ -230,7 +255,7 @@
             border: 1px solid var(--border-color) !important;
             border-radius: 20px !important;
             color: var(--text-main) !important;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25) !important;
         }
         .custom-modal-cabecalho {
             border-bottom: 1px solid var(--border-color) !important;
@@ -247,7 +272,7 @@
 
         /* Inputs do Modal */
         .form-control {
-            background-color: #0f172a !important;
+            background-color: var(--bg-input) !important;
             border: 1px solid var(--border-color) !important;
             color: var(--text-main) !important;
             width: 100% !important;
@@ -256,6 +281,9 @@
             padding: 10px 14px !important;
             margin-bottom: 10px !important;
         }
+        .form-control::placeholder {
+            color: var(--text-muted) !important;
+        }
         .form-control:focus {
             border-color: var(--accent-blue) !important;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
@@ -263,6 +291,7 @@
 
         #btnsalvarcorrida {
             background-color: var(--accent-blue) !important;
+            color: #ffffff !important;
             width: 100% !important;
             height: 44px !important;
             font-weight: 600 !important;
@@ -292,13 +321,18 @@
                     <i class="bi bi-arrow-left"></i>
                 </a>
             </div>
-            <div>
-                <h1 class="h6 mb-0 fw-bold text-center" id="lbltudo" style="cursor: pointer;" title="Toque para copiar o link do extrato">Carregando...</h1>
+            
+            <div style="flex: 1; min-width: 0;">
+                <h1 class="h6 mb-0 fw-bold text-center text-truncate" id="lbltudo" style="cursor: pointer;" title="Toque para copiar o link do extrato">Carregando...</h1>
                 <small style="color: var(--text-muted); font-size: 10px; display: block; text-align: center;">Toque 3x em um card para gerenciar</small>
             </div>
-            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1">
-                <i class="bi bi-receipt me-1"></i> Extrato
-            </span>
+            
+            <div class="d-flex align-items-center gap-2">
+                <!-- Pequeno botão para alternar tema Claro / Escuro -->
+                <button type="button" class="btn-acao-topo" id="btn-tema" title="Alternar Tema Claro/Escuro">
+                    <i class="bi bi-moon-stars" id="icone-tema"></i>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -329,10 +363,9 @@
             <div class="custom-modal-conteudo" id="modal-content_1">
                 <div class="custom-modal-cabecalho" id="modal-header_1" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; margin-bottom: 15px;">
                     <h1 class="custom-modal-title" id="modaladcliente" style="font-size: 18px; font-weight: bold; margin:0;">Adicionar Corrida</h1>
-                    <button class="custom-modal-close" id="icon_1" aria-label="Close" style="background: none; border: none; font-size: 22px; cursor: pointer; color: #94a3b8;"><i class="bi bi-x-lg"></i></button>
+                    <button class="custom-modal-close" id="icon_1" aria-label="Close" style="background: none; border: none; font-size: 22px; cursor: pointer;"><i class="bi bi-x-lg"></i></button>
                 </div>
                 <div class="custom-modal-body" id="modal-body_1" style="display: flex; flex-direction: column; gap: 8px;">
-                    <!-- inputmode="decimal" garante o teclado numérico no celular -->
                     <input class="form-control" id="txtvalor" placeholder="Valor (R$)" type="text" inputmode="decimal" style="width: 100% !important;">
                     <input class="form-control" id="txtcorrida" placeholder="Descrição / Rota / Local" type="text" style="width: 100% !important;">
                 </div>
@@ -356,8 +389,33 @@
 <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-auth.js"></script>
 <script src="https://bootsites.com.br/cdn/bootblocks@1.01/js/bootblocks.js"></script>
 
-<!-- Lógica JavaScript Integrada e Corrigida -->
+<!-- Lógica JavaScript Integrada -->
 <script>
+    // Controle de Tema (Inicia sempre no Claro por padrão)
+    const btnTema = document.getElementById('btn-tema');
+    const iconeTema = document.getElementById('icone-tema');
+    const metaTheme = document.getElementById('meta-theme-color');
+
+    function aplicarTema(tema) {
+        if (tema === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            iconeTema.className = 'bi bi-sun-fill text-warning';
+            metaTheme.setAttribute('content', '#0f172a');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            iconeTema.className = 'bi bi-moon-stars';
+            metaTheme.setAttribute('content', '#f1f5f9');
+        }
+    }
+
+    // Garante início no modo claro
+    aplicarTema('light');
+
+    btnTema.addEventListener('click', function () {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        aplicarTema(isDark ? 'light' : 'dark');
+    });
+
     var xretorno, id, tabelaidlogin, somadesaldo, resultado_pesquisa, Item, resposta_obter_linha, resposta_inserir_linha, id200, tabelaidloginnome, todosvalores, tabelaidcorridas, idapagar, tabelaidcorridacliente, usuarionome, tabelaidsaldo, nomescli200, idd, valor200, informacao200, tabelaidcorridavalor, horas200, tabelaidcorridainformacao, idliberar, tabelaidsaldodata, tabelaidgasto, tabelaidgastoinformacao, tabelaidgastodata, tabelaidmensal, tabelaidmensalmes;
 
     // Variáveis para controle do clique triplo
@@ -524,7 +582,6 @@
         $("#lbltudo").html('<strong>' + usuarionome + '</strong> • Total: R$ ' + format_decimal_number(somadesaldo, 2, true));
     }
 
-    // Configuração unificada do evento de clique triplo nos cards gerados
     function configurarCliquesCards() {
         $('.cardview').off('click').on('click', function() {
             var cardId = $(this).attr('id-unico');
@@ -543,7 +600,6 @@
             idapagar = realRowId;
 
             if (cliquesPorCard[cardId] >= 3) {
-                // Força o painel inferior a aparecer com flex visível
                 document.getElementById('telabotoes').style.setProperty('display', 'flex', 'important');
                 document.getElementById('save').style.setProperty('display', 'none', 'important');
                 $("#lbltudo").html('Selecionado ID: ' + idapagar);
