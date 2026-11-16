@@ -247,25 +247,41 @@
   const AUTH_TABELA_LOGIN = "177839";
   const AUTH_CAMPO_NOME = "nome";
 
-  // Gera uma assinatura única baseada no hardware/navegador + armazenamento local persistente
+  // Persistência dupla (localStorage + Cookie de longa duração) com fallback cruzado para Safari/iOS
   function obterAssinaturaDispositivo() {
-    let idSalvo = localStorage.getItem("hugo_taxi_uuid_unico");
+    const CHAVE_ID = "hugo_taxi_uuid_unico";
+    let idSalvo = null;
+
+    // 1. Tenta recuperar do localStorage
+    try {
+      idSalvo = localStorage.getItem(CHAVE_ID);
+    } catch (e) {}
+
+    // 2. Se não encontrou no localStorage, tenta recuperar dos Cookies
     if (!idSalvo) {
-      const infoBase = [
-        navigator.userAgent,
-        navigator.language,
-        screen.width + "x" + screen.height,
-        screen.colorDepth,
-        new Date().getTimezoneOffset()
-      ].join("|");
-      let hashSimples = 0;
-      for (let i = 0; i < infoBase.length; i++) {
-        hashSimples = ((hashSimples << 5) - hashSimples) + infoBase.charCodeAt(i);
-        hashSimples |= 0;
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const partes = cookies[i].trim().split("=");
+        if (partes[0] === CHAVE_ID && partes[1]) {
+          idSalvo = decodeURIComponent(partes[1]);
+          break;
+        }
       }
-      idSalvo = "dev_" + Math.abs(hashSimples).toString(36) + "_" + Math.random().toString(36).substring(2, 8);
-      localStorage.setItem("hugo_taxi_uuid_unico", idSalvo);
     }
+
+    // 3. Se ainda não existir em nenhum dos dois, gera um ID único aleatório
+    if (!idSalvo) {
+      idSalvo = "dev_" + Math.random().toString(36).substring(2, 10) + "_" + Date.now().toString(36);
+    }
+
+    // 4. Sincroniza obrigatoriamente em ambos (localStorage e Cookie por 1 ano)
+    try {
+      localStorage.setItem(CHAVE_ID, idSalvo);
+    } catch (e) {}
+
+    const umAnoSegundos = 31536000;
+    document.cookie = CHAVE_ID + "=" + encodeURIComponent(idSalvo) + "; max-age=" + umAnoSegundos + "; path=/; SameSite=Lax";
+
     return idSalvo;
   }
 
